@@ -1,34 +1,15 @@
 import pygame
 
-pygame.init()
-
 buttonDict = {}
 def unpackButtons(JSON, buttonDict, settings):
     for butn in JSON:
         buttonDict[butn['title']] = Button(butn, settings)
 
-def scaleMessage(rectSettings, messageRect, messageText):
-    messageTextWidth = messageRect.centerx - messageText.get_width() / 2 #Need to change messageRect to an arguement
-    messageTextHeight = messageRect.centery - messageText.get_height() / 2
-    textSurf = [messageTextWidth, messageTextHeight]
-    return textSurf
-
-def drawMessage(rectSettings,text):
-    pygame.draw.rect(rectSettings.screen, rectSettings.BLACK, rectSettings.messageRect,1)
-    messageText = rectSettings.font.render(text, True, rectSettings.WHITE)
-    textSurf = scaleMessage(rectSettings, messageText)
-    rectSettings.screen.blit(rectSettings.messageRectFill, rectSettings.messageRect)
-    rectSettings.screen.blit(messageText, textSurf)
-
-
-
-def pressed(rect, mousePos):
-    if mousePos[0] > rect.topleft[0]:
-        if mousePos[1] > rect.topleft[1]:
-            if mousePos[0] < rect.bottomright[0]:
-                if mousePos[1] < rect.bottomright[1]:
-                    return True
-    else: return False
+# def scaleMessage(rectSettings, messageRect, messageText):
+#     messageTextWidth = messageRect.centerx - messageText.get_width() / 2 #Need to change messageRect to an arguement
+#     messageTextHeight = messageRect.centery - messageText.get_height() / 2
+#     textSurf = [messageTextWidth, messageTextHeight]
+#     return textSurf
 
 class Button():
     def __init__(self,JSON, settings):
@@ -70,3 +51,9 @@ class Button():
 
     def click(self, master):
         master.sceneId = self.actionValue
+
+def scaleMessage(rectSettings, messageRect, messageText):
+    messageTextWidth = messageRect.centerx - messageText.get_width() / 2 #Need to change messageRect to an arguement
+    messageTextHeight = messageRect.centery - messageText.get_height() / 2
+    textSurf = [messageTextWidth, messageTextHeight]
+    return textSurf

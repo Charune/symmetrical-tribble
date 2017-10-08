@@ -12,5 +12,4 @@ mainSceneJSON = {'id':'s002','buttons':['Gym','Tennis Courts'],'background':'NUL
 gymSceneJSON = {'id':'s004','buttons':['Back'],'background':'NULL','titleCard':'Gymnasium'}
 tennisCourtsSceneJSON = {'id':'s003','buttons':['Back'],'background':r'Art\SoftTennis3Scaled.png','titleCard':'Tennis Courts'}
 
-#Final JSON
 sceneJSON = [startSceneJSON,mainSceneJSON,gymSceneJSON,tennisCourtsSceneJSON]
