@@ -18,15 +18,15 @@ class Scene():
             btn.update(master)
         master.mousePos = None
 
-    def draw(self, settings):
+    def draw(self, settings, master):
         self.drawBackground(settings)
         self.drawButtons(settings)
+        self.drawDayCounter(settings, master)
 
     def drawBackground(self, settings):
         if self.background == 'NULL':
             settings.screen.blit(settings.screenRectFill,(0,0))
             drawText(settings, self.titleCard, settings.titleRect, color = 'WHITE')
-            #drawTitleCard(settings, self.titleCard)
         else:
             settings.screen.blit(self.background,(0,0))
 
@@ -35,17 +35,14 @@ class Scene():
             btn.drawSet(settings, i)
 
     def drawDayCounter(self, settings, master):
-        counterText = settings.font.render(master.dayCount, True, settings.White)
-        settings.screen.blit(settings.dayCounterRectFill,)
+        settings.screen.blit(settings.dayCounterRectFill, settings.dayCounterRect)
+        drawText(settings, ("Day: " + str(master.dayCount)), settings.dayCounterRect, color = 'WHITE')
 
 class Button():
     def __init__(self,JSON, settings):
         self.title = JSON['title']
-        self.actionType = JSON['actionType']
-        self.actionValue = JSON['actionValue']
-        self.center = JSON['center']
+        self.actions = JSON['actions']
         self.rect = pygame.Rect((0,0), (0,0))
-        self.rect.center = self.center
         self.rect.size = settings.buttonSize
 
     def drawSet(self,settings, count):
@@ -75,7 +72,11 @@ class Button():
                 self.click(master)
 
     def click(self, master):
-        master.sceneId = self.actionValue
+        for action, actionValue in self.actions.items():
+            if action == 'nav':
+                master.sceneId = actionValue
+            if action == 'day++':
+                incrementDay(master, actionValue)
 
 #Dictionary of all scene objects
 sceneDict = {}
@@ -94,8 +95,8 @@ def unpackButtons(JSON, buttonDict, settings):
         buttonDict[butn['title']] = Button(butn, settings)
 
 #Increment Day Counter
-def incrementDay(master):
-    master.dayCount += 1
+def incrementDay(master, numDays):
+    master.dayCount += numDays
 
 #Draw text in center of rect
 def drawText(settings, text, rect, **kw_parameters):

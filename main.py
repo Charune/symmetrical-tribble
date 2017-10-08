@@ -9,7 +9,7 @@ from sceneObjects import sceneDict
 from event import eventQueue
 
 while not done:
-    sceneDict[master.sceneId].draw(rectSettings)
+    sceneDict[master.sceneId].draw(rectSettings, master)
 
     done = eventQueue()
 

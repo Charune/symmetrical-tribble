@@ -8,6 +8,8 @@ class RectSettings():
         self.BLUE = (0,0,255)
         self.GREEN = (0,255,0)
         self.RED = (255,0,0)
+        #self.BEIGE = (205,175,149)
+        self.BEIGE = (205,183,158)
 
         #Screen details
         self.size = (1024,768)
@@ -31,8 +33,9 @@ class RectSettings():
         self.messageRectFill.fill(self.BLACK)
 
         #DayCounter details
-        self.dayCounterRect = pygame.Rect(800,0,200,100)
-        self.messageRectFill = self.screen.subsurface(self.dayCounterRect).convert_alpha()
+        self.dayCounterRect = pygame.Rect(940,0,72,28)
+        self.dayCounterRectFill = self.screen.subsurface(self.dayCounterRect).convert_alpha()
+        self.dayCounterRectFill.fill(self.BEIGE)
 
     #Define the structure of a set of buttons
     def buttonSetPos(self):
