@@ -5,7 +5,7 @@
 
 from setup import master, clock, done, rectSettings
 import pygame
-from scenes import sceneDict
+from sceneObjects import sceneDict
 from event import eventQueue
 
 while not done:

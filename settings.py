@@ -18,6 +18,7 @@ class RectSettings():
 
         #Font details
         self.font = pygame.font.SysFont('Calibri',22,True,False)
+        self.titleRect = pygame.Rect((0,0), (self.size[0], self.size[1]/8))
 
         #Button details
         self.buttonSize = (145,40)
@@ -28,6 +29,10 @@ class RectSettings():
         self.messageRect = pygame.Rect(250,300,500,200)
         self.messageRectFill = self.screen.subsurface(self.messageRect).convert_alpha()
         self.messageRectFill.fill(self.BLACK)
+
+        #DayCounter details
+        self.dayCounterRect = pygame.Rect(800,0,200,100)
+        self.messageRectFill = self.screen.subsurface(self.dayCounterRect).convert_alpha()
 
     #Define the structure of a set of buttons
     def buttonSetPos(self):
@@ -40,3 +45,4 @@ class Master():
         #Initial Scene
         self.sceneId = 's001'
         self.mousePos = None
+        self.dayCount = 1

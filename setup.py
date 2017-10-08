@@ -1,7 +1,6 @@
 import pygame
 import settings
-import buttons
-import scenes
+import sceneObjects
 import json
 
 pygame.init()
@@ -22,5 +21,5 @@ master = settings.Master()
 rectSettings = settings.RectSettings()
 
 #Unpack the button and scene JSON into objects.
-buttons.unpackButtons(json.buttonJSON, buttons.buttonDict, rectSettings)
-scenes.unpackScene(json.sceneJSON, scenes.sceneDict)
+sceneObjects.unpackButtons(json.buttonJSON, sceneObjects.buttonDict, rectSettings)
+sceneObjects.unpackScene(json.sceneJSON, sceneObjects.sceneDict)
