@@ -1,2 +1,3 @@
 Art/
 __pycache__/
+*.pyc

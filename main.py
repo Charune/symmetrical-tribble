@@ -1,5 +1,5 @@
 #####
-# v. 0.0.1
+# v. 0.0.2
 # 10/07/2017
 #####
 
@@ -9,11 +9,13 @@ from sceneObjects import sceneDict
 from event import eventQueue
 
 while not done:
-    sceneDict[master.sceneId].draw(rectSettings, master)
+    #Draw current scene
+    sceneDict[master.sceneId].drawScene(rectSettings, master)
 
+    #run event and end if user quits
     done = eventQueue()
 
-    sceneDict[master.sceneId].update(master)
+    sceneDict[master.sceneId].update(rectSettings, master)
     pygame.display.flip()
     clock.tick(60)
 

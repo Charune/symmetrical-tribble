@@ -4,30 +4,36 @@ import pygame
 class Scene():
     def __init__(self,JSON):
         self.id = JSON['id']
-        self.buttons = []
         self.titleCard = JSON['titleCard']
-        for btn in JSON['buttons']:
-            self.buttons.append(buttonDict[btn])
-        if JSON['background'] == 'NULL':
-            self.background = 'NULL'
-        else:
-            self.background = pygame.image.load(JSON['background'])
+        self.sceneButtons(JSON)
+        self.sceneBackground(JSON)
+        self.textParagraph = JSON['textParagraph']
+        self.advance = JSON['advance']
 
-    def update(self, master):
+    def update(self, settings, master):
         for btn in self.buttons:
             btn.update(master)
+        if self.advance:
+            if master.mousePos != None:
+                if self.advance['incrementDay']:
+                    incrementDay(master, self.advance['incrementDay'])
+                master.sceneId = self.advance['nav']
+
         master.mousePos = None
 
-    def draw(self, settings, master):
+    def drawScene(self, settings, master):
         self.drawBackground(settings)
         self.drawButtons(settings)
         if self.id != 's001':
             self.drawDayCounter(settings, master)
+        if self.textParagraph:
+            drawText(settings.screen, self.textParagraph, settings.WHITE, settings.paragraphRect , settings.font)
 
     def drawBackground(self, settings):
-        if self.background == 'NULL':
+        if self.background is None:
             settings.screen.blit(settings.screenRectFill,(0,0))
-            drawText(settings, self.titleCard, settings.titleRect, color = 'WHITE')
+            if self.titleCard:
+                drawTextCenter(settings, self.titleCard, settings.titleRect, color = 'WHITE')
         else:
             settings.screen.blit(self.background,(0,0))
 
@@ -37,10 +43,25 @@ class Scene():
 
     def drawDayCounter(self, settings, master):
         settings.screen.blit(settings.dayCounterRectFill, settings.dayCounterRect)
-        drawText(settings, ("Day: " + str(master.dayCount)), settings.dayCounterRect, color = 'WHITE')
+        drawTextCenter(settings, ("Day: " + str(master.dayCount)), settings.dayCounterRect, color = 'WHITE')
+
+    def sceneButtons(self, JSON):
+        self.buttons = []
+        for btn in JSON['buttons']:
+            self.buttons.append(buttonDict[btn])
+
+    def sceneBackground(self, JSON):
+        if JSON['background']:
+            try:
+                self.background = pygame.image.load(JSON['background'])
+            except:
+                self.background = None
+        else:
+            self.background = None
 
 class Button():
     def __init__(self,JSON, settings):
+        self.id = JSON['id']
         self.title = JSON['title']
         self.actions = JSON['actions']
         self.rect = pygame.Rect((0,0), (0,0))
@@ -65,7 +86,8 @@ class Button():
         settings.screen.blit(buttonRectFill, btnRect)
 
         #Draw button text
-        drawText(settings, self.title, self.rect)
+        drawTextCenter(settings, self.title, self.rect)
+        #drawText2(settings.screen, self.title, settings.BLACK, self.rect, settings.font)
 
     def update(self, master):
         if master.mousePos != None:
@@ -93,14 +115,14 @@ buttonDict = {}
 #Convert JSON into button objects and fill buttonDict
 def unpackButtons(JSON, buttonDict, settings):
     for butn in JSON:
-        buttonDict[butn['title']] = Button(butn, settings)
+        buttonDict[butn['id']] = Button(butn, settings)
 
 #Increment Day Counter
 def incrementDay(master, numDays):
     master.dayCount += numDays
 
 #Draw text in center of rect
-def drawText(settings, text, rect, **kw_parameters):
+def drawTextCenter(settings, text, rect, **kw_parameters):
     textColor = settings.BLACK
     if 'color' in kw_parameters:
         if kw_parameters['color'] == 'WHITE':
@@ -112,7 +134,7 @@ def drawText(settings, text, rect, **kw_parameters):
     settings.screen.blit(fontDetails, textSurf)
 
 def drawText(surface, text, color, rect, font, aa=False, bkg=None):
-    rect = Rect(rect)
+    rect = pygame.Rect(rect)
     y = rect.top
     lineSpacing = -2
 
@@ -123,15 +145,15 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None):
         i = 1
 
         # determine if the row of text will be outside our area
-        if y + fontHeight &gt; rect.bottom:
+        if y + fontHeight > rect.bottom:
             break
 
         # determine maximum width of line
-        while font.size(text[:i])[0] &lt; rect.width and i &lt; len(text):
+        while font.size(text[:i])[0] < rect.width and i < len(text):
             i += 1
 
         # if we've wrapped the text, then adjust the wrap to the last word
-        if i &lt; len(text):
+        if i < len(text):
             i = text.rfind(" ", 0, i) + 1
 
         # render the line and blit it to the surface
@@ -139,7 +161,8 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None):
             image = font.render(text[:i], 1, color, bkg)
             image.set_colorkey(bkg)
         else:
-            image = font.render(text[:i], aa, color)
+            #image = font.render(text[:i], aa, color)
+            image = font.render(text[:i], 1, color)
 
         surface.blit(image, (rect.left, y))
         y += fontHeight + lineSpacing

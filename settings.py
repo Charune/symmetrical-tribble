@@ -27,10 +27,17 @@ class RectSettings():
         self.buttonSetPos = self.buttonSetPos()
         self.buttonSetGap = 60
 
+        #Advance details
+        self.advanceSize = self.screenRect
+
+
         #Dialog Box details
         self.messageRect = pygame.Rect(250,300,500,200)
         self.messageRectFill = self.screen.subsurface(self.messageRect).convert_alpha()
         self.messageRectFill.fill(self.BLACK)
+
+        #Paragraph Box details
+        self.paragraphRect = pygame.Rect(70,600,800,200)
 
         #DayCounter details
         self.dayCounterRect = pygame.Rect(940,0,72,28)
