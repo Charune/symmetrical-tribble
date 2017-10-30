@@ -1,3 +1,7 @@
+#Encounters arrays
+TennisCourtTrainEncounters = ['s003a','s003b']
+
+
 #Button JSONs
 btnStart = {'id':'btnStart'
     ,'title':'Start'
@@ -10,19 +14,16 @@ btnTennisCourt = {'id':'btnTennisCourt'
     ,'actions':{'nav':'s003'}}
 btnTennisCourtTrain = {'id':'btnTennisCourtTrain'
     ,'title':'Train'
-    ,'actions':{'nav':'s003a'}}
+    #,'actions':{'nav':'s003a'}}
+    ,'actions':{'encounters':TennisCourtTrainEncounters}}
 btnGym = {'id':'btnGym'
     ,'title':'Gym'
     ,'actions':{'nav':'s004'}}
-#I Don't want a different advance button for every encounter
-btnAdvance = {'id':'btnAdvance'
-    ,'title':'Advance'
-    ,'actions':{'nav':'s002','day++':1}}
 btnGameday = {'id':'btnGameday'
     ,'title':'Game Day'
     ,'actions':{'nav':'s005a'}}
 
-buttonJSON = [btnStart,btnBack,btnTennisCourt,btnTennisCourtTrain,btnGym,btnAdvance,btnGameday]
+buttonJSON = [btnStart,btnBack,btnTennisCourt,btnTennisCourtTrain,btnGym,btnGameday]
 
 #Scene JSONs
 startSceneJSON = {'id':'s001'
@@ -49,12 +50,19 @@ tennisCourtsSceneJSON = {'id':'s003'
     ,'titleCard':'Tennis Courts'
     ,'advance':None
     ,'textParagraph':None}
-tennisCourtsEncounterJSON = {'id':'s003a'
+tennisCourtsEncounterTrainJSON = {'id':'s003a'
     ,'buttons':[]
     ,'background':None
     ,'titleCard':None
     ,'advance':{'nav':'s002','incrementDay':1}
     ,'textParagraph':"You run the team through a set of training drills. A few hours pass as you run the team through a series of drills until they're fully exhausted"}
+tennisCourtsEncounterInjuryJSON = {'id':'s003b'
+    ,'buttons':[]
+    ,'background':None
+    ,'titleCard':None
+    ,'advance':{'nav':'s002','incrementDay':1}
+    ,'textParagraph':"You run the team through a set of training drills. One of your players sprains an ankle"}
+#TODO: Once player database is implemented, update text to take a random player's name.
 gamedaySceneJSON = {'id':'s005'
     ,'buttons':['btnGameday']
     ,'background':None
@@ -68,4 +76,12 @@ gamedayEncounterJSON = {'id':'s005a'
     ,'advance':{'nav':'s002','incrementDay':1}
     ,'textParagraph':"Your team competes and wins!"}
 
-sceneJSON = [startSceneJSON,mainSceneJSON,gymSceneJSON,tennisCourtsSceneJSON,tennisCourtsEncounterJSON,gamedaySceneJSON,gamedayEncounterJSON]
+sceneJSON = [startSceneJSON,mainSceneJSON ,gymSceneJSON ,tennisCourtsSceneJSON
+    ,tennisCourtsEncounterTrainJSON ,tennisCourtsEncounterInjuryJSON
+    ,gamedaySceneJSON ,gamedayEncounterJSON]
+
+#TennisCourtTrainEncounters = ['s003a','s003b']
+
+#encounterJSON = [TennisCourtTrainEncounters]
+
+encounterDict = {'TennisCourtTrainEncounters':['s003a','s003b']}

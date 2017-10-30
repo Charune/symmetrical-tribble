@@ -1,4 +1,5 @@
 import pygame
+import random
 
 #An object that determines the present background/buttons for the player
 class Scene():
@@ -103,6 +104,8 @@ class Button():
                 master.sceneId = actionValue
             if action == 'day++':
                 incrementDay(master, actionValue)
+            if action == 'encounters':
+                pickEncounter(master, actionValue)
 
 #Dictionary of all scene objects
 sceneDict = {}
@@ -174,3 +177,7 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None):
         text = text[i:]
 
     return text
+
+def pickEncounter(master, actionValue):
+    pick = random.randrange(len(actionValue))
+    master.sceneId = actionValue[pick] #This is dangerous because I shouldn't be updating the master.sceneId in multiple places
