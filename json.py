@@ -18,8 +18,11 @@ btnGym = {'id':'btnGym'
 btnAdvance = {'id':'btnAdvance'
     ,'title':'Advance'
     ,'actions':{'nav':'s002','day++':1}}
+btnGameday = {'id':'btnGameday'
+    ,'title':'Game Day'
+    ,'actions':{'nav':'s005a'}}
 
-buttonJSON = [btnStart,btnBack,btnTennisCourt,btnTennisCourtTrain,btnGym,btnAdvance]
+buttonJSON = [btnStart,btnBack,btnTennisCourt,btnTennisCourtTrain,btnGym,btnAdvance,btnGameday]
 
 #Scene JSONs
 startSceneJSON = {'id':'s001'
@@ -52,5 +55,17 @@ tennisCourtsEncounterJSON = {'id':'s003a'
     ,'titleCard':None
     ,'advance':{'nav':'s002','incrementDay':1}
     ,'textParagraph':"You run the team through a set of training drills. A few hours pass as you run the team through a series of drills until they're fully exhausted"}
+gamedaySceneJSON = {'id':'s005'
+    ,'buttons':['btnGameday']
+    ,'background':None
+    ,'titleCard':'Game Day'
+    ,'advance':None
+    ,'textParagraph':None}
+gamedayEncounterJSON = {'id':'s005a'
+    ,'buttons':[]
+    ,'background':None
+    ,'titleCard':None
+    ,'advance':{'nav':'s002','incrementDay':1}
+    ,'textParagraph':"Your team competes and wins!"}
 
-sceneJSON = [startSceneJSON,mainSceneJSON,gymSceneJSON,tennisCourtsSceneJSON,tennisCourtsEncounterJSON]
+sceneJSON = [startSceneJSON,mainSceneJSON,gymSceneJSON,tennisCourtsSceneJSON,tennisCourtsEncounterJSON,gamedaySceneJSON,gamedayEncounterJSON]

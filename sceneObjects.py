@@ -17,7 +17,10 @@ class Scene():
             if master.mousePos != None:
                 if self.advance['incrementDay']:
                     incrementDay(master, self.advance['incrementDay'])
-                master.sceneId = self.advance['nav']
+                if master.dayCount % 7 == 0:
+                    master.sceneId = 's005'
+                else:
+                    master.sceneId = self.advance['nav']
 
         master.mousePos = None
 
