@@ -1,7 +1,5 @@
 import pygame
-import settings
-import sceneObjects
-import json
+from settings import RectSettings, Master
 
 pygame.init()
 
@@ -14,12 +12,7 @@ done = False
 #Pygame Clock
 clock = pygame.time.Clock()
 
-#Initialize Master object to maintain game state.
-master = settings.Master()
-
 #Initialize RectSettings object to pass details of Rects
-rectSettings = settings.RectSettings()
-
-#Unpack the button and scene JSON into objects.
-sceneObjects.unpackButtons(json.buttonJSON, sceneObjects.buttonDict, rectSettings)
-sceneObjects.unpackScene(json.sceneJSON, sceneObjects.sceneDict)
+rectSettings = RectSettings()
+#Initialize Master object to maintain game state.
+master = Master(rectSettings)

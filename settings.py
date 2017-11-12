@@ -1,4 +1,7 @@
 import pygame
+from teams import Team
+from sceneObjects import Scene, Button, TopBar
+import json
 
 class RectSettings():
     def __init__(self):
@@ -8,8 +11,8 @@ class RectSettings():
         self.BLUE = (0,0,255)
         self.GREEN = (0,255,0)
         self.RED = (255,0,0)
-        #self.BEIGE = (205,175,149)
         self.BEIGE = (205,183,158)
+        #self.BEIGE = (205,175,149)
 
         #Screen details
         self.size = (1024,768)
@@ -27,17 +30,11 @@ class RectSettings():
         self.buttonSetPos = self.buttonSetPos()
         self.buttonSetGap = 60
 
-        #Advance details
-        self.advanceSize = self.screenRect
-
-
-        #Dialog Box details
-        self.messageRect = pygame.Rect(250,300,500,200)
-        self.messageRectFill = self.screen.subsurface(self.messageRect).convert_alpha()
-        self.messageRectFill.fill(self.BLACK)
-
         #Paragraph Box details
         self.paragraphRect = pygame.Rect(70,600,800,200)
+
+        #Alert Box details
+        self.alertRect = pygame.Rect(350,300,600,150)
 
         #DayCounter details
         self.dayCounterRect = pygame.Rect(940,0,72,28)
@@ -50,9 +47,41 @@ class RectSettings():
         y = self.screenRect.height/4
         return pygame.Rect((x,y),self.buttonSize)
 
-class Master():
+class SeasonSettings():
     def __init__(self):
+        self.matchdaysPerSeason = 20
+
+class Master():
+    def __init__(self, settings):
         #Initial Scene
         self.sceneId = 's001'
         self.mousePos = None
-        self.dayCount = 1
+        #Unpack master objects
+        self.unpackPlayerSchool(json.playerTeamJSON)
+        self.unpackOpponents(json.opponentList)
+        self.unpackButtons(json.buttonList)
+        self.unpackScenes(json.sceneList)
+        self.staffList = []
+        self.studentBody = None
+        self.topBar = TopBar()
+
+    def unpackPlayerSchool(self, playerTeam):
+        self.playerTeam = Team(playerTeam)
+
+    def unpackOpponents(self, opponentTeams):
+        opponentDict = {}
+        for opponentTeam in opponentTeams:
+            opponentDict[opponentTeam['id']] = Team(opponentTeam)
+        self.opponentDict = opponentDict
+
+    def unpackScenes(self, scenes):
+        sceneDict = {}
+        for scn in scenes:
+            sceneDict[scn['id']]= Scene(self, scn)
+        self.sceneDict = sceneDict
+
+    def unpackButtons(self, buttons):
+        buttonDict = {}
+        for butn in buttons:
+            buttonDict[butn['id']] = Button(butn)
+        self.buttonDict = buttonDict
