@@ -14,7 +14,6 @@ btnTennisCourt = {'id':'btnTennisCourt'
     ,'actions':{'nav':'s003'}}
 btnTennisCourtTrain = {'id':'btnTennisCourtTrain'
     ,'title':'Train'
-    #,'actions':{'nav':'s003a'}}
     ,'actions':{'encounters':TennisCourtTrainEncounters}}
 btnGym = {'id':'btnGym'
     ,'title':'Gym'
@@ -79,9 +78,3 @@ gamedayEncounterJSON = {'id':'s005a'
 sceneJSON = [startSceneJSON,mainSceneJSON ,gymSceneJSON ,tennisCourtsSceneJSON
     ,tennisCourtsEncounterTrainJSON ,tennisCourtsEncounterInjuryJSON
     ,gamedaySceneJSON ,gamedayEncounterJSON]
-
-#TennisCourtTrainEncounters = ['s003a','s003b']
-
-#encounterJSON = [TennisCourtTrainEncounters]
-
-encounterDict = {'TennisCourtTrainEncounters':['s003a','s003b']}
