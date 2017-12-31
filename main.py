@@ -5,17 +5,17 @@
 
 from setup import master, clock, done, rectSettings
 import pygame
-from sceneObjects import sceneDict
+#from sceneObjects2 import sceneDict
 from event import eventQueue
 
 while not done:
     #Draw current scene
-    sceneDict[master.sceneId].drawScene(rectSettings, master)
+    master.sceneDict[master.sceneId].drawScene(rectSettings, master)
 
     #run event and end if user quits
     done = eventQueue()
 
-    sceneDict[master.sceneId].update(rectSettings, master)
+    master.sceneDict[master.sceneId].update(master)
     pygame.display.flip()
     clock.tick(60)
 

@@ -1,4 +1,7 @@
 import pygame
+from teams import Team
+from sceneObjects2 import Scene, Button, TopBar
+import json
 
 class RectSettings():
     def __init__(self):
@@ -29,6 +32,7 @@ class RectSettings():
         self.buttonSetGap = 60
 
         #Advance details
+        #What is this??
         self.advanceSize = self.screenRect
 
 
@@ -39,6 +43,9 @@ class RectSettings():
 
         #Paragraph Box details
         self.paragraphRect = pygame.Rect(70,600,800,200)
+
+        #Alert Box details
+        self.alertRect = pygame.Rect(350,300,600,150)
 
         #DayCounter details
         self.dayCounterRect = pygame.Rect(940,0,72,28)
@@ -72,10 +79,44 @@ class RectSettings():
         numRows = self.rosterPopupRect.height / self.rosterPopupTableRowHeight
         return numRows
 
-class Master():
+
+class SeasonSettings():
     def __init__(self):
+        self.matchdaysPerSeason = 20
+        
+class Master():
+    def __init__(self,rectSettings):
         #Initial Scene
         self.sceneId = 's001'
         self.mousePos = None
         self.dayCount = 1
         self.rosterPopup = False
+        #Unpack master objects
+        self.unpackPlayerSchool(json.playerTeamJSON)
+        self.unpackOpponents(json.opponentList)
+        self.unpackButtons(json.buttonList)
+        self.unpackScenes(json.sceneList)
+        self.staffList = []
+        self.studentBody = None
+        self.topBar = TopBar(rectSettings)
+
+    def unpackPlayerSchool(self, playerTeam):
+        self.playerTeam = Team(playerTeam)
+
+    def unpackOpponents(self, opponentTeams):
+        opponentDict = {}
+        for opponentTeam in opponentTeams:
+            opponentDict[opponentTeam['id']] = Team(opponentTeam)
+        self.opponentDict = opponentDict
+
+    def unpackScenes(self, scenes):
+        sceneDict = {}
+        for scn in scenes:
+            sceneDict[scn['id']]= Scene(self, scn)
+        self.sceneDict = sceneDict
+
+    def unpackButtons(self, buttons):
+        buttonDict = {}
+        for butn in buttons:
+            buttonDict[butn['id']] = Button(butn)
+        self.buttonDict = buttonDict

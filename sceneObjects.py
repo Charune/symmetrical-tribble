@@ -9,7 +9,7 @@ class Scene():
         self.titleCard = JSON['titleCard']
         self.sceneButtons(JSON)
         self.sceneBackground(JSON)
-        self.textParagraph = JSON['textParagraph']
+        self.textParagraph = JSON['textData']
         self.advance = JSON['advance']
 
     def update(self, settings, master):
@@ -104,8 +104,8 @@ class Button():
         self.id = JSON['id']
         self.title = JSON['title']
         self.actions = JSON['actions']
-        self.rect = pygame.Rect((0,0), (0,0))
-        self.rect.size = settings.buttonSize
+        #self.rect = pygame.Rect((0,0), (0,0))
+        #self.rect.size = settings.buttonSize
 
     def drawSet(self,settings, count):
         #Specify size of button
@@ -142,6 +142,54 @@ class Button():
                 incrementDay(master, actionValue)
             if action == 'encounters':
                 pickEncounter(master, actionValue)
+            if action == 'execute':
+                if actionValue == 'matchdaySim':
+                    master.sceneDict['s005a'].updateTextData(matchday.matchdaySim(master), 'alert')
+
+
+#This is the object that holds the buttons across the top.
+#Each scene specifies whether to draw it or not.
+class TopBar():
+    def __init__(self):
+        #DayCounter
+        self.dayCount = 1
+        #ScheduleButton
+        #self.scheduleButtonRect = settings.scheduleButtonRect
+        #RosterButton
+        #self.rosterButtonRect = settings.rosterButtonRect
+
+    def update(self, master):
+        '''
+        if master.mousePos != None:
+            if self.scheduleButtonRect.collidepoint(master.mousePos):
+                self.scheduleButtonClick(master)
+            elif self.rosterButtonRect.collidepoint(master.mousePos):
+                self.rosterButtonClick(master)
+        '''
+        pass
+
+    def drawTopBar(self, rectSettings):
+        self.drawScheduleButton()
+        self.drawDayCounter(rectSettings)
+        self.drawRosterButton()
+
+    def drawScheduleButton(self):
+        pass
+
+    def drawDayCounter(self, rectSettings):
+        rectSettings.screen.blit(rectSettings.dayCounterRectFill, rectSettings.dayCounterRect)
+        drawTextCenter(rectSettings, ("Day: " + str(self.dayCount)), rectSettings.dayCounterRect, color = 'WHITE')
+
+    def drawRosterButton(self):
+        pass
+
+    def scheduleButtonClick(self):
+        #Draw Popup surface
+        pass
+
+    def rosterButtonClick(self):
+        #Draw Popup surface
+        pass
 
 #Dictionary of all scene objects
 sceneDict = {}
