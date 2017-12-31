@@ -99,7 +99,6 @@ class Master():
         self.staffList = []
         self.studentBody = None
         self.topBar = TopBar(rectSettings)
-        self.topBar = TopBar()
 
     def unpackPlayerSchool(self, playerTeam):
         self.playerTeam = Team(playerTeam)

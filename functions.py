@@ -2,7 +2,7 @@ import random
 
 #Increment Day Counter
 def incrementDay(master, numDays):
-    master.topBar.dayCount += numDays
+    master.dayCount += numDays
 
 #Draw text in center of rect
 def drawTextCenter(settings, text, rect, **kw_parameters):
