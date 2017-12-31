@@ -9,3 +9,5 @@ def eventQueue():
             return done
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             master.mousePos = pygame.mouse.get_pos()
+
+#include click events here...

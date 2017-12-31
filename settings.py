@@ -98,11 +98,8 @@ class Master():
         self.unpackScenes(json.sceneList)
         self.staffList = []
         self.studentBody = None
-<<<<<<< HEAD
         self.topBar = TopBar(rectSettings)
-=======
         self.topBar = TopBar()
->>>>>>> 601f7ffbd3efa4c7d9e8c88511559109b00d3604
 
     def unpackPlayerSchool(self, playerTeam):
         self.playerTeam = Team(playerTeam)

@@ -1,9 +1,8 @@
 import random
-import pygame
 
 #Increment Day Counter
 def incrementDay(master, numDays):
-    master.dayCount += numDays
+    master.topBar.dayCount += numDays
 
 #Draw text in center of rect
 def drawTextCenter(settings, text, rect, **kw_parameters):
@@ -18,28 +17,24 @@ def drawTextCenter(settings, text, rect, **kw_parameters):
     settings.screen.blit(fontDetails, textSurf)
 
 def drawText(surface, text, color, rect, font, aa=False, bkg=None):
-    rect = pygame.Rect(rect)
     y = rect.top
     lineSpacing = -2
-
     # get the height of the font
     fontHeight = font.size("Tg")[1]
-
     while text:
         i = 1
-
+        newline = False
         # determine if the row of text will be outside our area
         if y + fontHeight > rect.bottom:
             break
-
         # determine maximum width of line
-        while font.size(text[:i])[0] < rect.width and i < len(text):
+        while font.size(text[:i])[0] < rect.width and i < len(text) and newline is False:
+            if text[i] == '\n':
+                newline = True
+                break
             i += 1
-
-        # if we've wrapped the text, then adjust the wrap to the last word
         if i < len(text):
             i = text.rfind(" ", 0, i) + 1
-
         # render the line and blit it to the surface
         if bkg:
             image = font.render(text[:i], 1, color, bkg)
@@ -47,13 +42,13 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None):
         else:
             #image = font.render(text[:i], aa, color)
             image = font.render(text[:i], 1, color)
-
         surface.blit(image, (rect.left, y))
         y += fontHeight + lineSpacing
-
         # remove the text we just blitted
-        text = text[i:]
-
+        if newline:
+            text = text[i+1:]
+        else:
+            text = text[i:]
     return text
 
 def pickEncounter(master, actionValue):
