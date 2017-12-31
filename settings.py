@@ -1,6 +1,6 @@
 import pygame
 from teams import Team
-from sceneObjects2 import Scene, Button, TopBar
+from sceneObjects import Scene, Button, TopBar
 import json
 
 class RectSettings():
@@ -83,7 +83,7 @@ class RectSettings():
 class SeasonSettings():
     def __init__(self):
         self.matchdaysPerSeason = 20
-        
+
 class Master():
     def __init__(self,rectSettings):
         #Initial Scene
@@ -98,7 +98,11 @@ class Master():
         self.unpackScenes(json.sceneList)
         self.staffList = []
         self.studentBody = None
+<<<<<<< HEAD
         self.topBar = TopBar(rectSettings)
+=======
+        self.topBar = TopBar()
+>>>>>>> 601f7ffbd3efa4c7d9e8c88511559109b00d3604
 
     def unpackPlayerSchool(self, playerTeam):
         self.playerTeam = Team(playerTeam)
