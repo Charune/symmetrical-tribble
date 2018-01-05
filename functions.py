@@ -1,4 +1,5 @@
 import random
+import pygame
 
 #Increment Day Counter
 def incrementDay(master, numDays):
@@ -55,16 +56,29 @@ def pickEncounter(master, actionValue):
     pick = random.randrange(len(actionValue))
     master.sceneId = actionValue[pick] #This is dangerous because I shouldn't be updating the master.sceneId in multiple places
 
-def drawRosterTable(settings):
+def drawRosterPopup(settings):
+    settings.screen.blit(settings.rosterPopupRectFill, settings.rosterPopupRect)
+
+def drawRosterTable(master, settings):
     #settings.screen.blit(settings.rosterPopupTableRectFill, settings.rosterPopupTableRect)
     rowRect = settings.rosterPopupTableRowRect
     #rowSize = settings.rosterPopupTableRect.size
     teammateNames = []
-    for k in teammateDict:
-        teammateNames.append(k)
+    for k in master.playerTeam.teammates:
+        teammateNames.append(k.name)
     for i in range(settings.rosterPopupTableSetRows()):
-        pygame.draw.rect(settings.screen, settings.WHITE, rowRect,1)
+        pygame.draw.rect(settings.screen, settings.BLACK, rowRect,1)
         if i < len(teammateNames):
             drawTextCenter(settings, teammateNames[i], rowRect)
         rowRect = pygame.Rect(rowRect.x, rowRect.y + settings.rosterPopupTableRowHeight, rowRect.width, rowRect.height)
     #Create a setting for the height of each row. Then calculate the number of rows.
+
+def drawMatchCourts(master, settings):
+    courtWidth = (settings.screenRect.width - 124) / 2
+    courtHeight = settings.screenRect.height/2
+    courtRect = pygame.Rect((0,0),(courtWidth,courtHeight))
+    for i in range(4):
+        pygame.draw.rect(settings.screen, settings.WHITE, courtRect, 1)
+
+def testFunc():
+    print('hello')

@@ -1,3 +1,4 @@
+from functions import drawMatchCourts
 #Encounters list
 TennisCourtTrainEncounters = ['s003a','s003b']
 
@@ -19,9 +20,11 @@ btnGym = {'id':'btnGym'
     ,'actions':{'nav':'s004'}}
 btnGameday = {'id':'btnGameday'
     ,'title':'Game Day'
-    ,'actions':{'execute':'matchdaySim','nav':'s005a'}}
-
-buttonList = [btnStart,btnBack,btnTennisCourt,btnTennisCourtTrain,btnGym,btnGameday]
+    ,'actions':{'execute':'matchdaySim','nav':'s005b'}}
+btnGamedayConf = {'id':'btnGamedayConf'
+    ,'title':'Confirm'
+    ,'actions':{'nav':'s005a'}}
+buttonList = [btnStart,btnBack,btnTennisCourt,btnTennisCourtTrain,btnGym,btnGameday,btnGamedayConf]
 
 #Scene JSONs
 startSceneJSON = {'id':'s001'
@@ -83,10 +86,17 @@ gamedayResultsJSON = {'id':'s005a'
     ,'titleCard':None
     ,'actions':{'nav':'s002','incrementDay':1}
     ,'textData':None}
+gamedayCourtsJSON = {'id':'s005b'
+    ,'buttons':['btnGamedayConf']
+    ,'background':None
+    ,'showTopBar':False
+    ,'titleCard':None
+    ,'actions':{'execute': drawMatchCourts}
+    ,'textData':None}
 
 sceneList = [startSceneJSON,mainSceneJSON ,gymSceneJSON ,tennisCourtsSceneJSON
     ,tennisCourtsEncounterTrainJSON ,tennisCourtsEncounterInjuryJSON
-    ,gamedaySceneJSON ,gamedayResultsJSON]
+    ,gamedaySceneJSON ,gamedayResultsJSON, gamedayCourtsJSON]
 
 encounterDict = {'TennisCourtTrainEncounters':['s003a','s003b']}
 

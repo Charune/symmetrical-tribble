@@ -60,7 +60,7 @@ class RectSettings():
         #RosterPopup details
         self.rosterPopupRect = pygame.Rect(25,25,self.screenRect.width-50,self.screenRect.height-50)
         self.rosterPopupRectFill = self.screen.subsurface(self.rosterPopupRect).convert_alpha()
-        self.rosterPopupRectFill.fill(self.BLUE)
+        self.rosterPopupRectFill.fill(self.WHITE)
 
         #RosterPopup Table details
         self.rosterPopupTableRect = pygame.Rect(40,40,self.screenRect.width-80,self.screenRect.height-80)
@@ -76,7 +76,7 @@ class RectSettings():
         return pygame.Rect((x,y),self.buttonSize)
 
     def rosterPopupTableSetRows(self):
-        numRows = self.rosterPopupRect.height / self.rosterPopupTableRowHeight
+        numRows = self.rosterPopupRect.height // self.rosterPopupTableRowHeight
         return numRows
 
 

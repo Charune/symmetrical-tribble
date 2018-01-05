@@ -2,9 +2,13 @@ class Teammate():
     def __init__(self, dict):
         self.id = dict['id']
         self.name = dict['name']
-        self.skill = dict['skill']
         self.year = dict['year']
         self.grades = dict['grades']
+        self.skill = dict['skill']
+        '''
+        self.heart =
+        self.energy =
+        '''
 
 class Team():
     def __init__(self, JSON):

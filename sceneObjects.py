@@ -1,7 +1,7 @@
 import pygame
 import random
 import matchday
-from functions import incrementDay, drawTextCenter, drawText, pickEncounter, drawRosterTable
+from functions import incrementDay, drawTextCenter, drawText, pickEncounter, drawRosterTable, drawRosterPopup
 
 #An object that determines the present background/buttons for the player
 class Scene():
@@ -14,10 +14,10 @@ class Scene():
         self.actions = JSON['actions']
         self.showTopBar = JSON['showTopBar']
 
-    def update(self, master):
+    def update(self, master, rectSettings):
         master.topBar.update(master)
         self.updateSceneButtons(master)
-        self.updateActions(master)
+        self.updateActions(master, rectSettings)
         master.mousePos = None
 
     def updateSceneButtons(self, master):
@@ -29,15 +29,18 @@ class Scene():
         self.textData['text'] = text
         self.textData['loc'] = loc
 
-    def updateActions(self, master):
+    def updateActions(self, master, rectSettings):
         if self.actions:
+            if 'execute' in self.actions:
+                self.actions['execute'](master,rectSettings)
             if master.mousePos != None:
-                if self.actions['incrementDay']:
+                if 'incrementDay' in self.actions:
                     incrementDay(master, self.actions['incrementDay'])
-                if master.dayCount % 7 == 0:
-                    master.sceneId = 's005'
-                else:
-                    master.sceneId = self.actions['nav']
+                if 'nav' in self.actions:
+                    if master.dayCount % 7 == 0:
+                        master.sceneId = 's005'
+                    else:
+                        master.sceneId = self.actions['nav']
 
     def drawScene(self, settings, master):
         self.drawBackground(settings)
@@ -50,8 +53,8 @@ class Scene():
             if self.textData['loc'] == 'alert':
                 drawText(settings.screen, self.textData['text'], settings.WHITE, settings.alertRect , settings.font)
         if master.rosterPopup:
-            self.drawRosterPopup(settings)
-            drawRosterTable(settings)
+            drawRosterPopup(settings)
+            drawRosterTable(master, settings)
 
     def drawBackground(self, settings):
         if self.background is None:
@@ -82,24 +85,6 @@ class Scene():
                 self.background = None
         else:
             self.background = None
-
-    #Popup code should be split into its own class.
-    def drawRosterPopup(self, settings):
-        settings.screen.blit(settings.rosterPopupRectFill, settings.rosterPopupRect)
-
-    def drawRosterTable(self, settings):
-        #settings.screen.blit(settings.rosterPopupTableRectFill, settings.rosterPopupTableRect)
-        rowRect = settings.rosterPopupTableRowRect
-        #rowSize = settings.rosterPopupTableRect.size
-        teammateNames = []
-        for k in teammateDict:
-            teammateNames.append(k)
-        for i in range(settings.rosterPopupTableSetRows()):
-            pygame.draw.rect(settings.screen, settings.WHITE, rowRect,1)
-            if i < len(teammateNames):
-                drawTextCenter(settings, teammateNames[i], rowRect)
-            rowRect = pygame.Rect(rowRect.x, rowRect.y + settings.rosterPopupTableRowHeight, rowRect.width, rowRect.height)
-        #Create a setting for the height of each row. Then calculate the number of rows.
 
 class Button():
     def __init__(self, JSON):

@@ -13,7 +13,7 @@ while not done:
     #run event and end if user quits.
     done = eventQueue()
 
-    master.sceneDict[master.sceneId].update(master)
+    master.sceneDict[master.sceneId].update(master, rectSettings)
     pygame.display.flip()
     clock.tick(60)
 
