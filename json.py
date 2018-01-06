@@ -91,9 +91,11 @@ gamedayCourtsJSON = {'id':'s005b'
     ,'background':None
     ,'showTopBar':False
     ,'titleCard':None
-    ,'actions':{'execute': [functions.drawMatchCourts]}
-    ,'load':[functions.loadSidebar, functions.loadMatchCourts]
-    ,'textData':None}
+    #,'actions':{'execute': [functions.drawMatchCourts]}
+    ,'actions':None
+    ,'load':[functions.loadSidebar]
+    ,'textData':None
+    ,'sceneType':'MatchdayScene'}
 
 sceneList = [startSceneJSON,mainSceneJSON ,gymSceneJSON ,tennisCourtsSceneJSON
     ,tennisCourtsEncounterTrainJSON ,tennisCourtsEncounterInjuryJSON

@@ -4,7 +4,7 @@ import matchday
 from functions import incrementDay, drawTextCenter, drawText, pickEncounter, drawRosterTable, drawRosterPopup, navScene
 
 #An object that determines the present background/buttons for the player
-class Scene(): #TODO: Make a subclass of Scene for matchdayCourts scene 
+class Scene(): #TODO: Make a subclass of Scene for matchdayCourts scene
     def __init__(self, master, JSON):
         self.id = JSON['id']
         self.titleCard = JSON['titleCard']
@@ -105,6 +105,59 @@ class Scene(): #TODO: Make a subclass of Scene for matchdayCourts scene
                 self.background = None
         else:
             self.background = None
+
+class MatchdayScene(Scene):
+    def __init__(self, master, JSON):
+        Scene.__init__(self, master, JSON)
+        self.courtFocus = 0
+        self.courtTeammates = []
+
+    def drawScene(self, rectSettings, master):
+        self.drawBackground(rectSettings)
+        self.drawMatchCourts(rectSettings)
+        self.drawButtons(rectSettings)
+        if self.showTopBar:
+            master.topBar.drawTopBar(master, rectSettings)
+        if self.sidebar:
+            self.sidebar.drawSidebar(master, rectSettings)
+        if self.textData:
+            if self.textData['loc'] == 'paragraph':
+                drawText(rectSettings.screen, self.textData['text'], rectSettings.WHITE, rectSettings.paragraphRect , rectSettings.font)
+            if self.textData['loc'] == 'alert':
+                drawText(rectSettings.screen, self.textData['text'], rectSettings.WHITE, rectSettings.alertRect , rectSettings.font)
+        if master.rosterPopup:
+            drawRosterPopup(rectSettings)
+            drawRosterTable(master, rectSettings)
+
+    def drawMatchCourts(self, settings):
+        courtWidth = (settings.screenRect.width - 224) / 2
+        courtHeight = settings.screenRect.height/2
+        courtRect = []
+        courtRect.append(pygame.Rect((0,0),(courtWidth,courtHeight)))
+        courtRect.append(pygame.Rect((courtWidth,0),(courtWidth,courtHeight)))
+        courtRect.append(pygame.Rect((0,courtHeight),(courtWidth,courtHeight)))
+        courtRect.append(pygame.Rect((courtWidth,courtHeight),(courtWidth,courtHeight)))
+        for c,i in enumerate(courtRect):
+            if c == self.courtFocus:
+                pygame.draw.rect(settings.screen, settings.BLUE, i, 2)
+            else:
+                pygame.draw.rect(settings.screen, settings.WHITE, i, 1)
+
+    def drawTeammateMatchCourts(self, master, rectSettings):
+        pass
+        
+    def updateMatchCourts(self, master, settings):
+        drawMatchCourts(master, settings)
+        focusMatchCourts(master, settings)
+
+    def loadMatchCourts(self, master, settings):
+        master.sceneDict[master.sceneId].variables['courtFocus'] = 0
+
+    def addTeammateMatchCourts(self, master, settings, teammate):
+        self.courtTeammates.append(teammate)
+
+    def removeTeammateMatchCourts(self, master, settings, teammate):
+        pass
 
 class Button():
     def __init__(self, JSON):
@@ -237,11 +290,17 @@ class Sidebar():
             #Remove teammates that are clicked.
             self.sidebarClick(master, rectSettings)
 
+
     def sidebarClick(self, master, rectSettings):
         for t in self.teammateList:
             if t['rect'].collidepoint(master.mousePos):
-                t['clicked'] = True
-                #addTeammateMatchCourts(master, rectSettings, t)
+                if t['clicked']:
+                    t['clicked'] = False
+                    master.sceneDict[master.sceneId].removeTeammateMatchCourts(master, rectSettings, t)
+                else:
+                    t['clicked'] = True
+                    master.sceneDict[master.sceneId].addTeammateMatchCourts(master, rectSettings, t)
+
         '''
         for t in self.teammateList:
             if t['rect'].collidepoint(master.mousePos):

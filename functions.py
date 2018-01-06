@@ -101,6 +101,7 @@ def loadMatchCourts(master, settings):
     master.sceneDict[master.sceneId].variables['courtFocus'] = 0
 
 def addTeammateMatchCourts(master, settings, teammate):
+    pass
     #TODO: Move all this into a class ...
 
 '''

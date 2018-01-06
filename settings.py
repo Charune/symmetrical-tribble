@@ -1,6 +1,6 @@
 import pygame
 from teams import Team
-from sceneObjects import Scene, Button, TopBar
+from sceneObjects import Scene, MatchdayScene, Button, TopBar
 import json
 
 class RectSettings():
@@ -116,7 +116,11 @@ class Master():
     def unpackScenes(self, scenes):
         sceneDict = {}
         for scn in scenes:
-            sceneDict[scn['id']]= Scene(self, scn)
+            if 'sceneType' in scn:
+                if scn['sceneType'] == 'MatchdayScene':
+                    sceneDict[scn['id']]= MatchdayScene(self, scn)
+            else:
+                sceneDict[scn['id']]= Scene(self, scn)
         self.sceneDict = sceneDict
 
     def unpackButtons(self, buttons):
