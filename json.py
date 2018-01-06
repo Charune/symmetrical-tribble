@@ -92,7 +92,7 @@ gamedayCourtsJSON = {'id':'s005b'
     ,'showTopBar':False
     ,'titleCard':None
     ,'actions':{'execute': [functions.drawMatchCourts]}
-    ,'load':[functions.loadSidebar]
+    ,'load':[functions.loadSidebar, functions.loadMatchCourts]
     ,'textData':None}
 
 sceneList = [startSceneJSON,mainSceneJSON ,gymSceneJSON ,tennisCourtsSceneJSON

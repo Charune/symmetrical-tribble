@@ -12,6 +12,8 @@ def drawTextCenter(settings, text, rect, **kw_parameters):
     if 'color' in kw_parameters:
         if kw_parameters['color'] == 'WHITE':
             textColor = settings.WHITE
+        elif kw_parameters['color'] == 'RED':
+            textColor = settings.RED
     fontDetails = settings.font.render(text, True, textColor)
     rectTextWidth = rect.centerx - fontDetails.get_width() / 2
     rectTextHeight = rect.centery - fontDetails.get_height() / 2
@@ -82,8 +84,24 @@ def drawMatchCourts(master, settings):
     courtRect.append(pygame.Rect((courtWidth,0),(courtWidth,courtHeight)))
     courtRect.append(pygame.Rect((0,courtHeight),(courtWidth,courtHeight)))
     courtRect.append(pygame.Rect((courtWidth,courtHeight),(courtWidth,courtHeight)))
-    for i in courtRect:
-        pygame.draw.rect(settings.screen, settings.WHITE, i, 1)
+    for c,i in enumerate(courtRect):
+        if 'courtFocus' in master.sceneDict[master.sceneId].variables and c == master.sceneDict[master.sceneId].variables['courtFocus']:
+            pygame.draw.rect(settings.screen, settings.BLUE, courtRect[master.sceneDict[master.sceneId].variables['courtFocus']], 2)
+        else:
+            pygame.draw.rect(settings.screen, settings.WHITE, i, 1)
+
+
+
+def updateMatchCourts(master, settings):
+    drawMatchCourts(master, settings)
+    focusMatchCourts(master, settings)
+
+
+def loadMatchCourts(master, settings):
+    master.sceneDict[master.sceneId].variables['courtFocus'] = 0
+
+def addTeammateMatchCourts(master, settings, teammate):
+    #TODO: Move all this into a class ...
 
 '''
 def drawSidebar(master, settings):
@@ -102,8 +120,8 @@ def sidebarUpdate(master, RectSettings):
             self.click(master)
 '''
 def loadSidebar(master, rectSettings):
-    sidebar = sceneObjects.Sidebar(master, rectSettings)
-    return sidebar
+    master.sceneDict[master.sceneId].sidebar = sceneObjects.Sidebar(master, rectSettings)
+    #return sidebar
 
 def navScene(master, rectSettings, newSceneId):
     master.sceneId = newSceneId

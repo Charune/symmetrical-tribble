@@ -4,7 +4,7 @@ import matchday
 from functions import incrementDay, drawTextCenter, drawText, pickEncounter, drawRosterTable, drawRosterPopup, navScene
 
 #An object that determines the present background/buttons for the player
-class Scene():
+class Scene(): #TODO: Make a subclass of Scene for matchdayCourts scene 
     def __init__(self, master, JSON):
         self.id = JSON['id']
         self.titleCard = JSON['titleCard']
@@ -18,6 +18,7 @@ class Scene():
         else:
             self.loadActions = None
         self.sidebar = None
+        self.variables = {}
 
     def update(self, master, rectSettings):
         master.topBar.update(master)
@@ -85,18 +86,11 @@ class Scene():
         settings.screen.blit(settings.dayCounterRectFill, settings.dayCounterRect)
         drawTextCenter(settings, ("Day: " + str(master.dayCount)), settings.dayCounterRect, color = 'WHITE')
 
-    '''
-    def navScene(self, master, rectSettings, newSceneId):
-        print('navScene')
-        master.sceneId = newSceneId
-
-        master.sceneDict[master.sceneId].loadScene(master, rectSettings)
-    '''
-
     def loadScene(self, master, rectSettings):
         if self.loadActions:
             for i in self.loadActions:
-                self.sidebar = i(master, rectSettings)
+                #self.sidebar = i(master, rectSettings)
+                i(master, rectSettings)
 
     def unpackSceneButtons(self, master, JSON):
         self.buttons = []
@@ -202,8 +196,20 @@ class TopBar():
 
 class Sidebar():
     def __init__(self, master, rectSettings):
-        self.teammateList = master.playerTeam.teammates
-        self.teammateRects = self.generateTeammateRects(master, rectSettings)
+        self.generateTeammateList(master, rectSettings)
+        #self.teammateList = master.playerTeam.teammates
+        #self.teammateRects = self.generateTeammateRects(master, rectSettings)
+
+    def generateTeammateList(self, master, rectSettings):
+        self.teammateList = []
+        teammateRect = pygame.Rect((rectSettings.sidebarRect.topleft), (rectSettings.sidebarRect.width, rectSettings.sidebarRosterRowHeight))
+        for k in master.playerTeam.teammates: # self.teammateList:
+            teammateCell = {}
+            teammateCell['rect'] = teammateRect
+            teammateCell['details'] = k
+            teammateCell['clicked'] = False
+            self.teammateList.append(teammateCell)
+            teammateRect = pygame.Rect(teammateRect.x, teammateRect.y + rectSettings.sidebarRosterRowHeight, teammateRect.width, teammateRect.height)
 
     def drawSidebar(self, master, rectSettings):
         pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, rectSettings.sidebarRect, 1)
@@ -218,19 +224,31 @@ class Sidebar():
             rowRect = pygame.Rect(rowRect.x, rowRect.y + settings.sidebarRosterRowHeight, rowRect.width, rowRect.height)
     '''
     def drawSidebarRoster(self, master, rectSettings):
-        for t in self.teammateRects:
-            pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, t, 2)
-            #drawTextCenter(settings,)
+        for t in self.teammateList:
+            if t['clicked']:
+                pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, t['rect'], 1)
+                drawTextCenter(rectSettings, t['details'].name, t['rect'], color = 'RED')
+            else:
+                pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, t['rect'], 2)
+                drawTextCenter(rectSettings, t['details'].name, t['rect'], color = 'WHITE')
 
     def updateSidebar(self, master, rectSettings):
         if master.mousePos != None:
             #Remove teammates that are clicked.
-            self.teammateRects[:] = [t for t in self.teammateRects if not t.collidepoint(master.mousePos)]
+            self.sidebarClick(master, rectSettings)
 
-    def sidebarClick(self, master, rectSettings, teammateRect):
-        #pygame.draw.rect(settings.screen, settings.BLUE, teammateRect, 5)
-        pass
-
+    def sidebarClick(self, master, rectSettings):
+        for t in self.teammateList:
+            if t['rect'].collidepoint(master.mousePos):
+                t['clicked'] = True
+                #addTeammateMatchCourts(master, rectSettings, t)
+        '''
+        for t in self.teammateList:
+            if t['rect'].collidepoint(master.mousePos):
+                addTeammateMatchCourts(master, rectSettings, t)
+        self.teammateList[:] = [t for t in self.teammateList if not t['rect'].collidepoint(master.mousePos)]
+        '''
+    '''
     def generateTeammateRects(self, master, rectSettings):
         teammateRects = []
         teammateRect = pygame.Rect((rectSettings.sidebarRect.topleft), (rectSettings.sidebarRect.width, rectSettings.sidebarRosterRowHeight))
@@ -238,6 +256,7 @@ class Sidebar():
             teammateRects.append(teammateRect)
             teammateRect = pygame.Rect(teammateRect.x, teammateRect.y + rectSettings.sidebarRosterRowHeight, teammateRect.width, teammateRect.height)
         return teammateRects
+    '''
 '''
 class Popup():
     def __init__(self, RectSettings):
