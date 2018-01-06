@@ -22,6 +22,10 @@ class RectSettings():
         self.screen.fill(self.BLACK)
         self.screenRectFill = self.screen.subsurface(self.screenRect).convert_alpha()
 
+        #sidebar details
+        self.sidebarWidth = 224
+        self.sidebarRect = pygame.Rect((self.screenRect.width - self.sidebarWidth, 0),(self.sidebarWidth,self.screenRect.height))
+        self.sidebarRosterRowHeight = 100
         #Font details
         self.font = pygame.font.SysFont('Calibri',28,True,False)
         self.titleRect = pygame.Rect((0,0), (self.size[0], self.size[1]/8))

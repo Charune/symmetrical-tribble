@@ -1,7 +1,7 @@
 import pygame
 import random
 import matchday
-from functions import incrementDay, drawTextCenter, drawText, pickEncounter, drawRosterTable, drawRosterPopup
+from functions import incrementDay, drawTextCenter, drawText, pickEncounter, drawRosterTable, drawRosterPopup, navScene
 
 #An object that determines the present background/buttons for the player
 class Scene():
@@ -13,16 +13,23 @@ class Scene():
         self.textData = JSON['textData']
         self.actions = JSON['actions']
         self.showTopBar = JSON['showTopBar']
+        if 'load' in JSON:
+            self.loadActions = JSON['load']
+        else:
+            self.loadActions = None
+        self.sidebar = None
 
     def update(self, master, rectSettings):
         master.topBar.update(master)
-        self.updateSceneButtons(master)
+        self.updateSceneButtons(master, rectSettings)
         self.updateActions(master, rectSettings)
+        if self.sidebar:
+            self.sidebar.updateSidebar(master, rectSettings)
         master.mousePos = None
 
-    def updateSceneButtons(self, master):
+    def updateSceneButtons(self, master, rectSettings):
         for btn in self.buttons:
-            btn.update(master)
+            btn.update(master, rectSettings)
 
     def updateTextData(self, text, loc):
         self.textData = {}
@@ -32,29 +39,35 @@ class Scene():
     def updateActions(self, master, rectSettings):
         if self.actions:
             if 'execute' in self.actions:
-                self.actions['execute'](master,rectSettings)
+                for e in self.actions['execute']:
+                    e(master, rectSettings)
+                #self.actions['execute'](master,rectSettings)
             if master.mousePos != None:
                 if 'incrementDay' in self.actions:
                     incrementDay(master, self.actions['incrementDay'])
                 if 'nav' in self.actions:
-                    if master.dayCount % 7 == 0:
-                        master.sceneId = 's005'
+                    if master.dayCount % 2 == 0:
+                        #master.sceneId = 's005'
+                        navScene(master, rectSettings, 's005')
                     else:
-                        master.sceneId = self.actions['nav']
+                        #master.sceneId = self.actions['nav']
+                        navScene(master, rectSettings, self.actions['nav'])
 
-    def drawScene(self, settings, master):
-        self.drawBackground(settings)
-        self.drawButtons(settings)
+    def drawScene(self, rectSettings, master):
+        self.drawBackground(rectSettings)
+        self.drawButtons(rectSettings)
         if self.showTopBar:
-            master.topBar.drawTopBar(master, settings)
+            master.topBar.drawTopBar(master, rectSettings)
+        if self.sidebar:
+            self.sidebar.drawSidebar(master, rectSettings)
         if self.textData:
             if self.textData['loc'] == 'paragraph':
-                drawText(settings.screen, self.textData['text'], settings.WHITE, settings.paragraphRect , settings.font)
+                drawText(rectSettings.screen, self.textData['text'], rectSettings.WHITE, rectSettings.paragraphRect , rectSettings.font)
             if self.textData['loc'] == 'alert':
-                drawText(settings.screen, self.textData['text'], settings.WHITE, settings.alertRect , settings.font)
+                drawText(rectSettings.screen, self.textData['text'], rectSettings.WHITE, rectSettings.alertRect , rectSettings.font)
         if master.rosterPopup:
-            drawRosterPopup(settings)
-            drawRosterTable(master, settings)
+            drawRosterPopup(rectSettings)
+            drawRosterTable(master, rectSettings)
 
     def drawBackground(self, settings):
         if self.background is None:
@@ -71,6 +84,19 @@ class Scene():
     def drawDayCounter(self, settings, master):
         settings.screen.blit(settings.dayCounterRectFill, settings.dayCounterRect)
         drawTextCenter(settings, ("Day: " + str(master.dayCount)), settings.dayCounterRect, color = 'WHITE')
+
+    '''
+    def navScene(self, master, rectSettings, newSceneId):
+        print('navScene')
+        master.sceneId = newSceneId
+
+        master.sceneDict[master.sceneId].loadScene(master, rectSettings)
+    '''
+
+    def loadScene(self, master, rectSettings):
+        if self.loadActions:
+            for i in self.loadActions:
+                self.sidebar = i(master, rectSettings)
 
     def unpackSceneButtons(self, master, JSON):
         self.buttons = []
@@ -109,15 +135,16 @@ class Button():
         drawTextCenter(settings, self.title, self.rect)
         #drawText2(settings.screen, self.title, settings.BLACK, self.rect, settings.font)
 
-    def update(self, master):
+    def update(self, master, rectSettings):
         if master.mousePos != None:
             if self.rect.collidepoint(master.mousePos):
-                self.click(master)
+                self.click(master, rectSettings)
 
-    def click(self, master):
+    def click(self, master, rectSettings):
         for action, actionValue in self.actions.items():
             if action == 'nav':
-                master.sceneId = actionValue
+                #master.sceneId = actionValue
+                navScene(master, rectSettings, actionValue)
             if action == 'day++':
                 incrementDay(master, actionValue)
             if action == 'encounters':
@@ -172,6 +199,45 @@ class TopBar():
     def rosterButtonClick(self):
         #Draw Popup surface
         pass
+
+class Sidebar():
+    def __init__(self, master, rectSettings):
+        self.teammateList = master.playerTeam.teammates
+        self.teammateRects = self.generateTeammateRects(master, rectSettings)
+
+    def drawSidebar(self, master, rectSettings):
+        pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, rectSettings.sidebarRect, 1)
+        self.drawSidebarRoster(master, rectSettings)
+
+    '''
+    def drawSidebarRoster(self, master, settings):
+        rowRect = pygame.Rect((settings.sidebarRect.topleft), (settings.sidebarRect.width, settings.sidebarRosterRowHeight))
+        for k in self.teammateList:
+            pygame.draw.rect(settings.screen, settings.WHITE, rowRect, 3)
+            drawTextCenter(settings, k.name, rowRect, color = 'WHITE')
+            rowRect = pygame.Rect(rowRect.x, rowRect.y + settings.sidebarRosterRowHeight, rowRect.width, rowRect.height)
+    '''
+    def drawSidebarRoster(self, master, rectSettings):
+        for t in self.teammateRects:
+            pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, t, 2)
+            #drawTextCenter(settings,)
+
+    def updateSidebar(self, master, rectSettings):
+        if master.mousePos != None:
+            #Remove teammates that are clicked.
+            self.teammateRects[:] = [t for t in self.teammateRects if not t.collidepoint(master.mousePos)]
+
+    def sidebarClick(self, master, rectSettings, teammateRect):
+        #pygame.draw.rect(settings.screen, settings.BLUE, teammateRect, 5)
+        pass
+
+    def generateTeammateRects(self, master, rectSettings):
+        teammateRects = []
+        teammateRect = pygame.Rect((rectSettings.sidebarRect.topleft), (rectSettings.sidebarRect.width, rectSettings.sidebarRosterRowHeight))
+        for k in self.teammateList:
+            teammateRects.append(teammateRect)
+            teammateRect = pygame.Rect(teammateRect.x, teammateRect.y + rectSettings.sidebarRosterRowHeight, teammateRect.width, teammateRect.height)
+        return teammateRects
 '''
 class Popup():
     def __init__(self, RectSettings):

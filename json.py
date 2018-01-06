@@ -1,4 +1,4 @@
-from functions import drawMatchCourts
+import functions
 #Encounters list
 TennisCourtTrainEncounters = ['s003a','s003b']
 
@@ -91,7 +91,8 @@ gamedayCourtsJSON = {'id':'s005b'
     ,'background':None
     ,'showTopBar':False
     ,'titleCard':None
-    ,'actions':{'execute': drawMatchCourts}
+    ,'actions':{'execute': [functions.drawMatchCourts]}
+    ,'load':[functions.loadSidebar]
     ,'textData':None}
 
 sceneList = [startSceneJSON,mainSceneJSON ,gymSceneJSON ,tennisCourtsSceneJSON

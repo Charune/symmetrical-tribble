@@ -1,5 +1,6 @@
 import random
 import pygame
+import sceneObjects
 
 #Increment Day Counter
 def incrementDay(master, numDays):
@@ -74,11 +75,40 @@ def drawRosterTable(master, settings):
     #Create a setting for the height of each row. Then calculate the number of rows.
 
 def drawMatchCourts(master, settings):
-    courtWidth = (settings.screenRect.width - 124) / 2
+    courtWidth = (settings.screenRect.width - 224) / 2
     courtHeight = settings.screenRect.height/2
-    courtRect = pygame.Rect((0,0),(courtWidth,courtHeight))
-    for i in range(4):
-        pygame.draw.rect(settings.screen, settings.WHITE, courtRect, 1)
+    courtRect = []
+    courtRect.append(pygame.Rect((0,0),(courtWidth,courtHeight)))
+    courtRect.append(pygame.Rect((courtWidth,0),(courtWidth,courtHeight)))
+    courtRect.append(pygame.Rect((0,courtHeight),(courtWidth,courtHeight)))
+    courtRect.append(pygame.Rect((courtWidth,courtHeight),(courtWidth,courtHeight)))
+    for i in courtRect:
+        pygame.draw.rect(settings.screen, settings.WHITE, i, 1)
+
+'''
+def drawSidebar(master, settings):
+    pygame.draw.rect(settings.screen, settings.WHITE, settings.sidebarRect, 1)
+
+def drawSidebarRoster(master, settings):
+    rowRect = pygame.Rect((settings.sidebarRect.topleft), (settings.sidebarRect.width, settings.sidebarRosterRowHeight))
+    for k in master.playerTeam.teammates:
+        pygame.draw.rect(settings.screen, settings.WHITE, rowRect, 3)
+        drawTextCenter(settings, k.name, rowRect, color = 'WHITE')
+        rowRect = pygame.Rect(rowRect.x, rowRect.y + settings.sidebarRosterRowHeight, rowRect.width, rowRect.height)
+
+def sidebarUpdate(master, RectSettings):
+    if master.mousePos != None:
+        if self.rect.collidepoint(master.mousePos):
+            self.click(master)
+'''
+def loadSidebar(master, rectSettings):
+    sidebar = sceneObjects.Sidebar(master, rectSettings)
+    return sidebar
+
+def navScene(master, rectSettings, newSceneId):
+    master.sceneId = newSceneId
+
+    master.sceneDict[master.sceneId].loadScene(master, rectSettings)
 
 def testFunc():
     print('hello')
