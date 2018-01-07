@@ -5,6 +5,7 @@ class Teammate():
         self.year = dict['year']
         self.grades = dict['grades']
         self.skill = dict['skill']
+        self.style = dict['style']
         '''
         self.heart =
         self.energy =
@@ -15,7 +16,7 @@ class Team():
         self.id = JSON['id']
         self.name = JSON['name']
         self.teammates = []
-        if JSON['teammates']:
+        if 'teammates' in JSON:
             self.generateJSONTeammates(JSON['teammates'])
         else:
             self.generateRandomTeammates()
@@ -34,6 +35,7 @@ class Team():
             ,'year':2015
             ,'grades':75
             ,'skill':2
+            ,'style':'Str'
             }
         return Teammate(randomDict)
 

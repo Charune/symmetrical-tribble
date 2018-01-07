@@ -20,11 +20,17 @@ btnGym = {'id':'btnGym'
     ,'actions':{'nav':'s004'}}
 btnGameday = {'id':'btnGameday'
     ,'title':'Game Day'
-    ,'actions':{'execute':'matchdaySim','nav':'s005b'}}
+    ,'actions':{'nav':'s005b'}}
 btnGamedayConf = {'id':'btnGamedayConf'
     ,'title':'Confirm'
-    ,'actions':{'nav':'s005a'}}
-buttonList = [btnStart,btnBack,btnTennisCourt,btnTennisCourtTrain,btnGym,btnGameday,btnGamedayConf]
+    ,'actions':{'execute':[functions.matchdaySim],'nav':'s005a'}}
+btnGamedayCont = {'id':'btnGamedayCont'
+    ,'title':'Continue'
+    ,'actions':{'execute':[functions.matchdayCont]}}
+btnGamedayComp = {'id':'btnGamedayComp'
+    ,'title':'Compete'
+    ,'actions':{'execute':[functions.matchdayComp],'nav':'s005a'}}
+buttonList = [btnStart,btnBack,btnTennisCourt,btnTennisCourtTrain,btnGym,btnGameday,btnGamedayConf,btnGamedayCont,btnGamedayComp]
 
 #Scene JSONs
 startSceneJSON = {'id':'s001'
@@ -87,13 +93,13 @@ gamedayResultsJSON = {'id':'s005a'
     ,'actions':{'nav':'s002','incrementDay':1}
     ,'textData':None}
 gamedayCourtsJSON = {'id':'s005b'
-    ,'buttons':['btnGamedayConf']
+    ,'buttons':['btnGamedayConf','btnGamedayCont','btnGamedayComp']
     ,'background':None
     ,'showTopBar':False
     ,'titleCard':None
     #,'actions':{'execute': [functions.drawMatchCourts]}
     ,'actions':None
-    ,'load':[functions.loadSidebar]
+    ,'load':[functions.loadSidebar, functions.loadMatchCourts]
     ,'textData':None
     ,'sceneType':'MatchdayScene'}
 
@@ -108,37 +114,41 @@ tm1 = {'id':'tm001'
     ,'name':'Nami'
     ,'year':2015
     ,'grades':75
-    ,'skill':2
+    ,'skill':3
     ,'energy':'default'
-    ,'heart':'normal'}
+    ,'heart':'normal'
+    ,'style':'Agi'}
 tm2 = {'id':'tm002'
     ,'name':'Vicky'
     ,'year':2015
     ,'grades':75
-    ,'skill':2
+    ,'skill':0
     ,'energy':'default'
-    ,'heart':'normal'}
+    ,'heart':'normal'
+    ,'style':'Str'}
 tm3 = {'id':'tm003'
     ,'name':'Haruhi'
     ,'year':2015
     ,'grades':75
-    ,'skill':2
+    ,'skill':5
     ,'energy':'default'
-    ,'heart':'normal'}
+    ,'heart':'normal'
+    ,'style':'Str'}
 tm4 = {'id':'tm004'
     ,'name':'Yuna'
     ,'year':2015
     ,'grades':75
-    ,'skill':2
+    ,'skill':1
     ,'energy':'default'
-    ,'heart':'normal'}
+    ,'heart':'normal'
+    ,'style':'Endr'}
 
 teammatesList = [tm1, tm2, tm3, tm4]
 
 #Opponents
 OpponentTeam1 = {'id':'schl001'
     ,'name':'Salt Academy'
-    ,'teammates':[]
+    #,'teammates':[]
     }
 
 opponentList = [OpponentTeam1]

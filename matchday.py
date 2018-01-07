@@ -1,7 +1,7 @@
 import random
 
 def matchdaySim(master):
-    opponents = matchdayOpponent(master.opponentDict)[:]
+    opponents = matchdayOpponent(master.opponentsDict)[:]
     outcome = []
     for tm in master.playerTeam.teammates:
         pick = random.randrange(len(opponents))
@@ -34,3 +34,5 @@ def matchdayResults(outcome):
         tempText = '{0} won the the match. It was a {1}. \n'.format(o['victor'],o['type'])
         text = text + tempText
     return text
+
+#def matchdaySimv2(master):

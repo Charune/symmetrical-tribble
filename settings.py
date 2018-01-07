@@ -99,7 +99,7 @@ class Master():
         self.unpackPlayerSchool(json.playerTeamJSON)
         self.unpackOpponents(json.opponentList)
         self.unpackButtons(json.buttonList)
-        self.unpackScenes(json.sceneList)
+        self.unpackScenes(rectSettings, json.sceneList)
         self.staffList = []
         self.studentBody = None
         self.topBar = TopBar(rectSettings)
@@ -108,19 +108,19 @@ class Master():
         self.playerTeam = Team(playerTeam)
 
     def unpackOpponents(self, opponentTeams):
-        opponentDict = {}
+        opponentsDict = {}
         for opponentTeam in opponentTeams:
-            opponentDict[opponentTeam['id']] = Team(opponentTeam)
-        self.opponentDict = opponentDict
+            opponentsDict[opponentTeam['id']] = Team(opponentTeam)
+        self.opponentsDict = opponentsDict
 
-    def unpackScenes(self, scenes):
+    def unpackScenes(self, rectSettings, scenes):
         sceneDict = {}
         for scn in scenes:
             if 'sceneType' in scn:
                 if scn['sceneType'] == 'MatchdayScene':
-                    sceneDict[scn['id']]= MatchdayScene(self, scn)
+                    sceneDict[scn['id']]= MatchdayScene(self, rectSettings, scn)
             else:
-                sceneDict[scn['id']]= Scene(self, scn)
+                sceneDict[scn['id']]= Scene(self, rectSettings, scn)
         self.sceneDict = sceneDict
 
     def unpackButtons(self, buttons):

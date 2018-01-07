@@ -1,6 +1,7 @@
 import random
 import pygame
 import sceneObjects
+import matchday
 
 #Increment Day Counter
 def incrementDay(master, numDays):
@@ -14,6 +15,8 @@ def drawTextCenter(settings, text, rect, **kw_parameters):
             textColor = settings.WHITE
         elif kw_parameters['color'] == 'RED':
             textColor = settings.RED
+        elif kw_parameters['color'] == 'BEIGE':
+            textColor = settings.BEIGE
     fontDetails = settings.font.render(text, True, textColor)
     rectTextWidth = rect.centerx - fontDetails.get_width() / 2
     rectTextHeight = rect.centery - fontDetails.get_height() / 2
@@ -76,58 +79,37 @@ def drawRosterTable(master, settings):
         rowRect = pygame.Rect(rowRect.x, rowRect.y + settings.rosterPopupTableRowHeight, rowRect.width, rowRect.height)
     #Create a setting for the height of each row. Then calculate the number of rows.
 
-def drawMatchCourts(master, settings):
-    courtWidth = (settings.screenRect.width - 224) / 2
-    courtHeight = settings.screenRect.height/2
-    courtRect = []
-    courtRect.append(pygame.Rect((0,0),(courtWidth,courtHeight)))
-    courtRect.append(pygame.Rect((courtWidth,0),(courtWidth,courtHeight)))
-    courtRect.append(pygame.Rect((0,courtHeight),(courtWidth,courtHeight)))
-    courtRect.append(pygame.Rect((courtWidth,courtHeight),(courtWidth,courtHeight)))
-    for c,i in enumerate(courtRect):
-        if 'courtFocus' in master.sceneDict[master.sceneId].variables and c == master.sceneDict[master.sceneId].variables['courtFocus']:
-            pygame.draw.rect(settings.screen, settings.BLUE, courtRect[master.sceneDict[master.sceneId].variables['courtFocus']], 2)
-        else:
-            pygame.draw.rect(settings.screen, settings.WHITE, i, 1)
-
-
-
-def updateMatchCourts(master, settings):
-    drawMatchCourts(master, settings)
-    focusMatchCourts(master, settings)
-
-
-def loadMatchCourts(master, settings):
-    master.sceneDict[master.sceneId].variables['courtFocus'] = 0
-
-def addTeammateMatchCourts(master, settings, teammate):
-    pass
-    #TODO: Move all this into a class ...
-
-'''
-def drawSidebar(master, settings):
-    pygame.draw.rect(settings.screen, settings.WHITE, settings.sidebarRect, 1)
-
-def drawSidebarRoster(master, settings):
-    rowRect = pygame.Rect((settings.sidebarRect.topleft), (settings.sidebarRect.width, settings.sidebarRosterRowHeight))
-    for k in master.playerTeam.teammates:
-        pygame.draw.rect(settings.screen, settings.WHITE, rowRect, 3)
-        drawTextCenter(settings, k.name, rowRect, color = 'WHITE')
-        rowRect = pygame.Rect(rowRect.x, rowRect.y + settings.sidebarRosterRowHeight, rowRect.width, rowRect.height)
-
-def sidebarUpdate(master, RectSettings):
-    if master.mousePos != None:
-        if self.rect.collidepoint(master.mousePos):
-            self.click(master)
-'''
 def loadSidebar(master, rectSettings):
     master.sceneDict[master.sceneId].sidebar = sceneObjects.Sidebar(master, rectSettings)
-    #return sidebar
+
+def loadMatchCourts(master, rectSettings):
+    #master.sceneDict[master.sceneId].variables['courtFocus'] = 0
+    master.sceneDict[master.sceneId].courtFocus = 0
+    master.sceneDict[master.sceneId].matchdayContinue = False
+    master.sceneDict[master.sceneId].courtMatchOpponents(master, rectSettings)
+
+def pickOpponents(master, rectSettings):
+    opponentList = []
+    opponents = master.opponentsDict['schl001'].teammates[:]
+    for i in range(4):
+        pick = random.randrange(len(opponents))
+        opponentList.append(opponents[pick])
+        del opponents[pick]
+    return opponentList
 
 def navScene(master, rectSettings, newSceneId):
     master.sceneId = newSceneId
-
     master.sceneDict[master.sceneId].loadScene(master, rectSettings)
+
+def matchdayCont(master, rectSettings):
+    master.sceneDict[master.sceneId].matchdayContinue = True
+
+def matchdaySim(master, rectSettings):
+    #master.sceneDict['s005a'].updateTextData(master.sceneDict['s005a'].matchdaySim(master), 'alert')
+    pass
+
+def matchdayComp(master, rectSettings):
+    master.sceneDict[master.sceneId].matchdayCompete(master, rectSettings)
 
 def testFunc():
     print('hello')
