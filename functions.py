@@ -1,7 +1,6 @@
 import random
 import pygame
 import sceneObjects
-import matchday
 
 #Increment Day Counter
 def incrementDay(master, numDays):
@@ -85,7 +84,7 @@ def loadSidebar(master, rectSettings):
 def loadMatchCourts(master, rectSettings):
     #master.sceneDict[master.sceneId].variables['courtFocus'] = 0
     master.sceneDict[master.sceneId].courtFocus = 0
-    master.sceneDict[master.sceneId].matchdayContinue = False
+    master.sceneDict[master.sceneId].matchdayPhase = 0
     master.sceneDict[master.sceneId].courtMatchOpponents(master, rectSettings)
 
 def pickOpponents(master, rectSettings):

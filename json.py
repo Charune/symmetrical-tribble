@@ -93,7 +93,7 @@ gamedayResultsJSON = {'id':'s005a'
     ,'actions':{'nav':'s002','incrementDay':1}
     ,'textData':None}
 gamedayCourtsJSON = {'id':'s005b'
-    ,'buttons':['btnGamedayConf','btnGamedayCont','btnGamedayComp']
+    ,'buttons':[] #['btnGamedayConf','btnGamedayCont','btnGamedayComp']
     ,'background':None
     ,'showTopBar':False
     ,'titleCard':None

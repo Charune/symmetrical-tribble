@@ -1,6 +1,5 @@
 import pygame
 import random
-import matchday
 import functions
 
 #An object that determines the present background/buttons for the player
@@ -115,16 +114,21 @@ class MatchdayScene(Scene):
         self.courtTeammates = {}
         self.generateCourtRects(master, rectSettings)
         self.matchdayContinue = False
+        self.matchdayPhase = 0
+        self.loadMatchdayConfirm(master, rectSettings)
 
     def drawScene(self, rectSettings, master):
         self.drawBackground(rectSettings)
         self.drawMatchCourts(rectSettings)
         self.drawButtons(rectSettings)
+        #self.drawMatchdayConfirm(master, rectSettings)
+        self.drawMatchdayButtons(master, rectSettings)
         if self.showTopBar:
             master.topBar.drawTopBar(master, rectSettings)
         if self.sidebar:
             self.sidebar.drawSidebar(master, rectSettings)
-        if self.matchdayContinue:
+        #if self.matchdayContinue:
+        if self.matchdayPhase == 1:
             self.drawMatchOpponent(master, rectSettings)
         if self.textData:
             if self.textData['loc'] == 'paragraph':
@@ -137,10 +141,13 @@ class MatchdayScene(Scene):
 
     def update(self, master, rectSettings):
         master.topBar.update(master)
-        self.sidebar.updateSidebar(master, rectSettings)
+        if self.matchdayPhase == 0:
+            self.sidebar.updateSidebar(master, rectSettings)
         self.updateMatchCourts(master, rectSettings)
         self.updateSceneButtons(master, rectSettings)
+        self.updateMatchdayButtons(master, rectSettings)
         self.updateActions(master, rectSettings)
+        #self.matchdayConfButton.update(master, rectSettings)
         master.mousePos = None
 
     def drawMatchCourts(self, rectSettings):
@@ -217,16 +224,10 @@ class MatchdayScene(Scene):
             functions.drawTextCenter(rectSettings, str(o.name + ' ' + o.style), oppRect, color = 'BEIGE')
 
     def matchdayCompete(self, master, rectSettings):
-        print('working')
         self.matchWinners = []
-        print(len(self.courtTeammates))
-        print(len(self.opponentList))
         for t, o in zip(self.courtTeammates, self.opponentList):
             self.matchWinners.append(self.matchSim(self.courtTeammates[t],o))
         master.sceneDict['s005a'].updateTextData(self.matchdayResults(self.matchWinners), 'alert')
-
-    def simMatch(self, teammate, opponent):
-        return opponent.name
 
     def matchdayResults(self, outcome):
         text = ''
@@ -250,20 +251,62 @@ class MatchdayScene(Scene):
         else:
             return {'victor':opponent.name,'type':'blowout'}
 
-    def matchdaySim(self, master):
-        opponents = matchdayOpponent(master.opponentsDict)[:]
-        outcome = []
-        for tm in master.playerTeam.teammates:
-            pick = random.randrange(len(opponents))
-            outcome.append(matchSim(tm,opponents[pick]))
-            del opponents[pick]
-        return matchdayResults(outcome)
+    def drawMatchdayButtons(self, master, rectSettings):
+        self.drawMatchdayPlayBtn(master, rectSettings)
+        self.drawMatchdayResultsBtn(master, rectSettings)
+
+    def drawMatchdayPlayBtn(self, master, rectSettings):
+        if len(self.courtTeammates) >= 4 and self.matchdayPhase == 0:
+            self.showMatchdayPlayBtn(master, rectSettings)
+            self.matchdayPlayButton.isActive = True
+        else:
+            self.matchdayPlayButton.isActive = False
+
+    def drawMatchdayResultsBtn(self, master, rectSettings):
+        if self.matchdayPhase == 1:
+            self.showMatchdayResultsBtn(master, rectSettings)
+            self.matchdayResultsButton.isActive = True
+        else:
+            self.matchdayResultsButton.isActive = False
+
+    def loadMatchdayConfirm(self, master, rectSettings):
+        btnMatchdayPlay = {'id':'btnGamedayPlay'
+            ,'title':'Play'
+            ,'actions':{'execute':[self.clickMatchdayPlay]}}#[functions.matchdayCont]}} #TODO:Move funcions. function to self
+        btnMatchdayResults = {'id':'btnGamedayResults'
+            ,'title':'Results'
+            ,'actions':{'execute':[self.clickMatchdayResults],'nav':'s005a'}}
+        centerButtonRect = pygame.Rect((rectSettings.screenRect.centerx - 180, rectSettings.screenRect.centery - 20), (rectSettings.buttonSetPos.size))
+        self.matchdayPlayButton = Button(btnMatchdayPlay)
+        self.matchdayPlayButton.rect = centerButtonRect
+        self.matchdayPlayButton.isActive = False
+        self.matchdayResultsButton = Button(btnMatchdayResults)
+        self.matchdayResultsButton.rect = centerButtonRect
+        self.matchdayResultsButton.isActive = False
+
+    def showMatchdayPlayBtn(self, master, rectSettings):
+        self.matchdayPlayButton.drawButton(master, rectSettings)
+
+
+    def showMatchdayResultsBtn(self, master, rectSettings):
+        self.matchdayResultsButton.drawButton(master, rectSettings)
+
+    def clickMatchdayResults(self, master, rectSettings):
+        self.matchdayCompete(master, rectSettings)
+
+    def clickMatchdayPlay(self, master, rectSettings):
+        self.matchdayPhase = 1
+
+    def updateMatchdayButtons(self, master, rectSettings):
+        self.matchdayPlayButton.update(master, rectSettings)
+        self.matchdayResultsButton.update(master, rectSettings)
 
 class Button():
     def __init__(self, JSON):
         self.id = JSON['id']
         self.title = JSON['title']
         self.actions = JSON['actions']
+        self.isActive = True
 
     def drawSet(self,settings, count):
         #Specify size of button
@@ -284,7 +327,7 @@ class Button():
 
     def update(self, master, rectSettings):
         if master.mousePos != None:
-            if self.rect.collidepoint(master.mousePos):
+            if self.rect.collidepoint(master.mousePos) and self.isActive:
                 self.click(master, rectSettings)
 
     def click(self, master, rectSettings):
@@ -305,7 +348,16 @@ class Button():
                 if actionValue == 'matchdayCont':
                     master.sceneDict[master.sceneId].matchdayContinue = True
                 '''
-
+    def drawButton(self, master, rectSetting):
+        #Fill the Rect in with WHITE
+        buttonRectFill = rectSetting.screen.subsurface(self.rect).convert_alpha()
+        buttonRectFill.fill(rectSetting.WHITE)
+        #Draw the Black border around the Rect
+        pygame.draw.rect(rectSetting.screen, rectSetting.BLACK, self.rect,1)
+        #Blit Rect with Black border and White fill
+        rectSetting.screen.blit(buttonRectFill, self.rect)
+        #Draw button text
+        functions.drawTextCenter(rectSetting, self.title, self.rect)
 
 #This is the object that holds the buttons across the top.
 #Each scene specifies whether to draw it or not.
