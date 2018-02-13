@@ -78,6 +78,7 @@ def drawRosterTable(master, settings):
         rowRect = pygame.Rect(rowRect.x, rowRect.y + settings.rosterPopupTableRowHeight, rowRect.width, rowRect.height)
     #Create a setting for the height of each row. Then calculate the number of rows.
 
+'''
 def loadSidebar(master, rectSettings):
     master.sceneDict[master.sceneId].sidebar = sceneObjects.Sidebar(master, rectSettings)
 
@@ -85,7 +86,7 @@ def loadMatchCourts(master, rectSettings):
     master.sceneDict[master.sceneId].courtFocus = 0
     master.sceneDict[master.sceneId].matchdayPhase = 0
     master.sceneDict[master.sceneId].courtMatchOpponents(master, rectSettings)
-
+'''
 def pickOpponents(master, rectSettings):
     opponentList = []
     opponents = master.opponentsDict['schl001'].teammates[:]

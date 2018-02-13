@@ -25,10 +25,10 @@ class Scene():
             self.actions = JSON['actions']
         self.sidebar = None
 
-    def update(self, master, rectSettings):
+    def update(self, master, rectSettings, seasonSettings):
         master.topBar.update(master)
         self.updateSceneButtons(master, rectSettings)
-        self.updateActions(master, rectSettings)
+        self.updateActions(master, rectSettings, seasonSettings)
         master.mousePos = None
 
     def updateSceneButtons(self, master, rectSettings):
@@ -40,7 +40,7 @@ class Scene():
         self.textData['text'] = text
         self.textData['loc'] = loc
 
-    def updateActions(self, master, rectSettings):
+    def updateActions(self, master, rectSettings, seasonSettings):
         if self.actions:
             if 'execute' in self.actions:
                 for e in self.actions['execute']:
@@ -49,14 +49,14 @@ class Scene():
                 if 'incrementDay' in self.actions:
                     functions.incrementDay(master, self.actions['incrementDay'])
                 if 'nav' in self.actions:
-                    if master.dayCount % 2 == 0:
+                    if master.dayCount % seasonSettings.matchdayFrequency == 0:
                         self.navScene(master, rectSettings, 's005')
                     else:
                         self.navScene(master, rectSettings, self.actions['nav'])
 
-    def drawScene(self, rectSettings, master):
+    def drawScene(self, master, rectSettings):
         self.drawBackground(rectSettings)
-        self.drawButtons(rectSettings)
+        self.drawButtons(master, rectSettings)
         if self.showTopBar:
             master.topBar.drawTopBar(master, rectSettings)
         if self.sidebar:
@@ -78,9 +78,9 @@ class Scene():
         else:
             settings.screen.blit(self.background,(0,0))
 
-    def drawButtons(self, settings):
+    def drawButtons(self, master, settings):
         for i, btn in enumerate(self.buttons):
-            btn.drawSet(settings, i)
+            btn.drawSet(master, settings, i)
 
     def drawDayCounter(self, settings, master):
         settings.screen.blit(settings.dayCounterRectFill, settings.dayCounterRect)
@@ -119,10 +119,16 @@ class MatchdayScene(Scene):
         self.matchdayPhase = 0
         #self.loadMatchdayScene(master, rectSettings)
 
-    def drawScene(self, rectSettings, master):
+    def loadScene(self, master, rectSettings):
+        tempFunctionDict = {'loadMatchdayConfirm':self.loadMatchdayConfirm, 'loadSidebar':self.loadSidebar, 'loadMatchCourts':self.loadMatchCourts}
+        if self.loadActions:
+            for i in self.loadActions:
+                tempFunctionDict[i](master, rectSettings)
+
+    def drawScene(self, master, rectSettings):
         self.drawBackground(rectSettings)
         self.drawMatchCourts(rectSettings)
-        self.drawButtons(rectSettings)
+        self.drawButtons(master, rectSettings)
         self.drawMatchdayButtons(master, rectSettings)
         if self.showTopBar:
             master.topBar.drawTopBar(master, rectSettings)
@@ -139,14 +145,14 @@ class MatchdayScene(Scene):
             functions.drawRosterPopup(rectSettings)
             functions.drawRosterTable(master, rectSettings)
 
-    def update(self, master, rectSettings):
+    def update(self, master, rectSettings, seasonSettings):
         master.topBar.update(master)
         if self.matchdayPhase == 0:
             self.sidebar.updateSidebar(master, rectSettings)
         self.updateMatchCourts(master, rectSettings)
         self.updateSceneButtons(master, rectSettings)
         self.updateMatchdayButtons(master, rectSettings)
-        self.updateActions(master, rectSettings)
+        self.updateActions(master, rectSettings, seasonSettings)
         master.mousePos = None
 
     def drawMatchCourts(self, rectSettings):
@@ -283,6 +289,14 @@ class MatchdayScene(Scene):
         self.matchdayResultsButton.rect = centerButtonRect
         self.matchdayResultsButton.isActive = False
 
+    def loadSidebar(self, master, rectSettings):
+        master.sceneDict[master.sceneId].sidebar = Sidebar(master, rectSettings)
+
+    def loadMatchCourts(self, master, rectSettings):
+        master.sceneDict[master.sceneId].courtFocus = 0
+        master.sceneDict[master.sceneId].matchdayPhase = 0
+        master.sceneDict[master.sceneId].courtMatchOpponents(master, rectSettings)
+
     def showMatchdayPlayBtn(self, master, rectSettings):
         self.matchdayPlayButton.drawButton(master, rectSettings)
 
@@ -301,14 +315,14 @@ class MatchdayScene(Scene):
         self.matchdayResultsButton.update(master, rectSettings)
 
 class Button():
-    def __init__(self, JSON, parentScene):
+    def __init__(self, JSON, parentScene = None):
         self.id = JSON['id']
         self.title = JSON['title']
         self.actions = JSON['actions']
         self.isActive = True
         self.__parent__ = parentScene
 
-    def drawSet(self,settings, count):
+    def drawSet(self, master, settings, count):
         #Specify size of button
         btnRect = pygame.Rect(settings.buttonSetPos.topleft, settings.buttonSetPos.size)
         #Specify position of button based on amount already drawn
@@ -324,6 +338,7 @@ class Button():
         #Draw button text
         functions.drawTextCenter(settings, self.title, self.rect)
         #drawText2(settings.screen, self.title, settings.BLACK, self.rect, settings.font)
+        self.setButtonScene(master.sceneDict[master.sceneId])
 
     def update(self, master, rectSettings):
         if master.mousePos != None:
@@ -358,6 +373,10 @@ class Button():
         rectSetting.screen.blit(buttonRectFill, self.rect)
         #Draw button text
         functions.drawTextCenter(rectSetting, self.title, self.rect)
+        #self.setButtonScene(master.sceneDict[master.sceneId])
+
+    def setButtonScene(self, parentScene):
+        self.__parent__ = parentScene
 
 #This is the object that holds the buttons across the top.
 #Each scene specifies whether to draw it or not.

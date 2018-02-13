@@ -82,6 +82,7 @@ class RectSettings():
 class SeasonSettings():
     def __init__(self):
         self.matchdaysPerSeason = 20
+        self.matchdayFrequency = 3
 
 class Master():
     def __init__(self,rectSettings):

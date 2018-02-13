@@ -1,5 +1,5 @@
 import pygame
-from settings import RectSettings, Master
+from settings import RectSettings, SeasonSettings, Master
 
 pygame.init()
 
@@ -14,5 +14,6 @@ clock = pygame.time.Clock()
 
 #Initialize RectSettings object to pass details of Rects
 rectSettings = RectSettings()
+seasonSettings = SeasonSettings()
 #Initialize Master object to maintain game state.
 master = Master(rectSettings)

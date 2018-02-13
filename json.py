@@ -1,8 +1,9 @@
 import functions
+from  sceneObjects import MatchdayScene
 #Encounters list
 TennisCourtTrainEncounters = ['s003a','s003b']
 
-#Button JSONs
+#Button JSONs TODO: rename button 'actions' to 'triggers'
 btnStart = {'id':'btnStart'
     ,'title':'Start'
     ,'actions':{'nav':'s002'}}
@@ -99,7 +100,7 @@ gamedayCourtsJSON = {'id':'s005b'
     ,'titleCard':None
     #,'actions':{'execute': [functions.drawMatchCourts]}
     ,'actions':None
-    ,'load':[functions.loadSidebar, functions.loadMatchCourts]
+    ,'load':['loadMatchdayConfirm', 'loadSidebar', 'loadMatchCourts'] #TODO: Replace the functions with string names and then have a dictionary 
     ,'textData':None
     ,'sceneType':'MatchdayScene'}
 
