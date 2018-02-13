@@ -82,7 +82,6 @@ def loadSidebar(master, rectSettings):
     master.sceneDict[master.sceneId].sidebar = sceneObjects.Sidebar(master, rectSettings)
 
 def loadMatchCourts(master, rectSettings):
-    #master.sceneDict[master.sceneId].variables['courtFocus'] = 0
     master.sceneDict[master.sceneId].courtFocus = 0
     master.sceneDict[master.sceneId].matchdayPhase = 0
     master.sceneDict[master.sceneId].courtMatchOpponents(master, rectSettings)
@@ -95,11 +94,11 @@ def pickOpponents(master, rectSettings):
         opponentList.append(opponents[pick])
         del opponents[pick]
     return opponentList
-
+'''
 def navScene(master, rectSettings, newSceneId):
     master.sceneId = newSceneId
     master.sceneDict[master.sceneId].loadScene(master, rectSettings)
-
+'''
 def matchdayCont(master, rectSettings):
     master.sceneDict[master.sceneId].matchdayContinue = True
 

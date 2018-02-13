@@ -3,28 +3,30 @@ import random
 import functions
 
 #An object that determines the present background/buttons for the player
-class Scene(): #TODO: Make a subclass of Scene for matchdayCourts scene
+class Scene():
     def __init__(self, master, rectSettings, JSON):
         self.id = JSON['id']
-        self.titleCard = JSON['titleCard']
         self.unpackSceneButtons(master, JSON)
         self.unpackSceneBackground(JSON)
-        self.textData = JSON['textData']
-        self.actions = JSON['actions']
-        self.showTopBar = JSON['showTopBar']
+        self.titleCard = None
+        if 'titleCard' in JSON:
+            self.titleCard = JSON['titleCard']
+        self.showTopBar = True
+        if 'showTopBar' in JSON:
+            self.showTopBar = JSON['showTopBar']
+        self.loadActions = None
         if 'load' in JSON:
             self.loadActions = JSON['load']
-        else:
-            self.loadActions = None
+        self.textData = None
+        if 'textData' in JSON:
+            self.textData = JSON['textData']
+        self.actions = None
+        if 'actions' in JSON:
+            self.actions = JSON['actions']
         self.sidebar = None
-        self.variables = {}
 
     def update(self, master, rectSettings):
         master.topBar.update(master)
-        '''
-        if self.sidebar:
-            self.sidebar.updateSidebar(master, rectSettings)
-        '''
         self.updateSceneButtons(master, rectSettings)
         self.updateActions(master, rectSettings)
         master.mousePos = None
@@ -43,17 +45,14 @@ class Scene(): #TODO: Make a subclass of Scene for matchdayCourts scene
             if 'execute' in self.actions:
                 for e in self.actions['execute']:
                     e(master, rectSettings)
-                #self.actions['execute'](master,rectSettings)
             if master.mousePos != None:
                 if 'incrementDay' in self.actions:
                     functions.incrementDay(master, self.actions['incrementDay'])
                 if 'nav' in self.actions:
                     if master.dayCount % 2 == 0:
-                        #master.sceneId = 's005'
-                        functions.navScene(master, rectSettings, 's005')
+                        self.navScene(master, rectSettings, 's005')
                     else:
-                        #master.sceneId = self.actions['nav']
-                        functions.navScene(master, rectSettings, self.actions['nav'])
+                        self.navScene(master, rectSettings, self.actions['nav'])
 
     def drawScene(self, rectSettings, master):
         self.drawBackground(rectSettings)
@@ -87,25 +86,29 @@ class Scene(): #TODO: Make a subclass of Scene for matchdayCourts scene
         settings.screen.blit(settings.dayCounterRectFill, settings.dayCounterRect)
         functions.drawTextCenter(settings, ("Day: " + str(master.dayCount)), settings.dayCounterRect, color = 'WHITE')
 
+    def navScene(self, master, rectSettings, newSceneId):
+        master.sceneId = newSceneId
+        master.sceneDict[master.sceneId].loadScene(master, rectSettings)
+
     def loadScene(self, master, rectSettings):
         if self.loadActions:
             for i in self.loadActions:
-                #self.sidebar = i(master, rectSettings)
                 i(master, rectSettings)
 
     def unpackSceneButtons(self, master, JSON):
         self.buttons = []
-        for btn in JSON['buttons']:
-            self.buttons.append(master.buttonDict[btn])
+        if 'buttons' in JSON:
+            for btn in JSON['buttons']:
+                self.buttons.append(master.buttonDict[btn])
 
     def unpackSceneBackground(self, JSON):
-        if JSON['background']:
+        self.background = None
+        if 'background' in JSON:
             try:
                 self.background = pygame.image.load(JSON['background'])
             except:
                 self.background = None
-        else:
-            self.background = None
+
 
 class MatchdayScene(Scene):
     def __init__(self, master, rectSettings, JSON):
@@ -113,21 +116,18 @@ class MatchdayScene(Scene):
         self.courtFocus = 0
         self.courtTeammates = {}
         self.generateCourtRects(master, rectSettings)
-        self.matchdayContinue = False
         self.matchdayPhase = 0
-        self.loadMatchdayConfirm(master, rectSettings)
+        #self.loadMatchdayScene(master, rectSettings)
 
     def drawScene(self, rectSettings, master):
         self.drawBackground(rectSettings)
         self.drawMatchCourts(rectSettings)
         self.drawButtons(rectSettings)
-        #self.drawMatchdayConfirm(master, rectSettings)
         self.drawMatchdayButtons(master, rectSettings)
         if self.showTopBar:
             master.topBar.drawTopBar(master, rectSettings)
         if self.sidebar:
             self.sidebar.drawSidebar(master, rectSettings)
-        #if self.matchdayContinue:
         if self.matchdayPhase == 1:
             self.drawMatchOpponent(master, rectSettings)
         if self.textData:
@@ -147,7 +147,6 @@ class MatchdayScene(Scene):
         self.updateSceneButtons(master, rectSettings)
         self.updateMatchdayButtons(master, rectSettings)
         self.updateActions(master, rectSettings)
-        #self.matchdayConfButton.update(master, rectSettings)
         master.mousePos = None
 
     def drawMatchCourts(self, rectSettings):
@@ -277,10 +276,10 @@ class MatchdayScene(Scene):
             ,'title':'Results'
             ,'actions':{'execute':[self.clickMatchdayResults],'nav':'s005a'}}
         centerButtonRect = pygame.Rect((rectSettings.screenRect.centerx - 180, rectSettings.screenRect.centery - 20), (rectSettings.buttonSetPos.size))
-        self.matchdayPlayButton = Button(btnMatchdayPlay)
+        self.matchdayPlayButton = Button(btnMatchdayPlay, self)
         self.matchdayPlayButton.rect = centerButtonRect
         self.matchdayPlayButton.isActive = False
-        self.matchdayResultsButton = Button(btnMatchdayResults)
+        self.matchdayResultsButton = Button(btnMatchdayResults, self)
         self.matchdayResultsButton.rect = centerButtonRect
         self.matchdayResultsButton.isActive = False
 
@@ -302,11 +301,12 @@ class MatchdayScene(Scene):
         self.matchdayResultsButton.update(master, rectSettings)
 
 class Button():
-    def __init__(self, JSON):
+    def __init__(self, JSON, parentScene):
         self.id = JSON['id']
         self.title = JSON['title']
         self.actions = JSON['actions']
         self.isActive = True
+        self.__parent__ = parentScene
 
     def drawSet(self,settings, count):
         #Specify size of button
@@ -341,7 +341,7 @@ class Button():
                     e(master, rectSettings)
             if action == 'nav':
                 #master.sceneId = actionValue
-                functions.navScene(master, rectSettings, actionValue)
+                self.__parent__.navScene(master, rectSettings, actionValue)
                 '''
                 if actionValue == 'matchdaySim':
                     master.sceneDict['s005a'].updateTextData(matchday.matchdaySim(master), 'alert')
