@@ -161,7 +161,9 @@ class MatchdayScene(Scene):
                 pygame.draw.rect(rectSettings.screen, rectSettings.BLUE, i, 2)
             else:
                 pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, i, 1)
+            self.drawMatchVictoryMeter(i, rectSettings)
         self.drawTeammateMatchCourts(rectSettings)
+
 
     def drawTeammateMatchCourts(self, rectSettings):
         for c, t in self.courtTeammates.items():
@@ -213,12 +215,12 @@ class MatchdayScene(Scene):
 
     def generateCourtRects(self, master, rectSettings):
         self.courtRects = []
-        courtWidth = (rectSettings.screenRect.width - 224) / 2
-        courtHeight = rectSettings.screenRect.height/2
-        self.courtRects.append(pygame.Rect((0,0),(courtWidth,courtHeight)))
-        self.courtRects.append(pygame.Rect((courtWidth,0),(courtWidth,courtHeight)))
-        self.courtRects.append(pygame.Rect((0,courtHeight),(courtWidth,courtHeight)))
-        self.courtRects.append(pygame.Rect((courtWidth,courtHeight),(courtWidth,courtHeight)))
+        courtWidth = rectSettings.matchCourtSize[0]
+        courtHeight = rectSettings.matchCourtSize[1]
+        self.courtRects.append(pygame.Rect((0,0),rectSettings.matchCourtSize))
+        self.courtRects.append(pygame.Rect((courtWidth,0),rectSettings.matchCourtSize))
+        self.courtRects.append(pygame.Rect((0,courtHeight),rectSettings.matchCourtSize))
+        self.courtRects.append(pygame.Rect((courtWidth,courtHeight),rectSettings.matchCourtSize))
 
     def courtMatchOpponents(self, master, rectSettings):
         self.opponentList = functions.pickOpponents(master, rectSettings)
@@ -273,6 +275,24 @@ class MatchdayScene(Scene):
             self.matchdayResultsButton.isActive = True
         else:
             self.matchdayResultsButton.isActive = False
+
+    def drawMatchVictoryMeter(self, courtRect, rectSettings): #TODO: add the odds of player victory as parameter
+        if self.matchdayPhase == 1:
+            meterRectX = courtRect.x + (courtRect.width - rectSettings.matchVictoryMeterSize[0]) / 2
+            meterRectY = courtRect.bottom - rectSettings.matchVictoryMeterSize[1] - rectSettings.matchVictoryMeterGap
+            meterRectPos = (meterRectX, meterRectY)
+            meterRect = pygame.Rect(meterRectPos, rectSettings.matchVictoryMeterSize)
+            pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, meterRect, 2)
+            meterRectPlayerFillRect = pygame.Rect(meterRect.topleft,(meterRect.width/2, meterRect.height))
+            meterRectOpponentFillRect =pygame.Rect(meterRectPlayerFillRect.topright,(meterRect.width/2, meterRect.height))
+            meterRectPlayerFill = rectSettings.screen.subsurface(meterRectPlayerFillRect).convert_alpha()
+            meterRectOpponentFill = rectSettings.screen.subsurface(meterRectOpponentFillRect).convert_alpha()
+            meterRectPlayerFill.fill(rectSettings.GREEN)
+            meterRectOpponentFill.fill(rectSettings.RED)
+            rectSettings.screen.blit(meterRectPlayerFill, meterRectPlayerFillRect)
+            rectSettings.screen.blit(meterRectOpponentFill, meterRectOpponentFillRect)
+        else:
+            pass
 
     def loadMatchdayConfirm(self, master, rectSettings):
         btnMatchdayPlay = {'id':'btnGamedayPlay'
