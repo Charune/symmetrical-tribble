@@ -70,9 +70,10 @@ class RectSettings():
         self.rosterPopupTableRowRect = pygame.Rect(40,40,self.screenRect.width-80,self.rosterPopupTableRowHeight)
 
         #Matchday details
-        self.matchVictoryMeterSize = (220,75)
-        self.matchVictoryMeterGap = 30
+        self.matchVictoryMeterSize = (220,65)
+        self.matchVictoryMeterGap = 70
         self.matchCourtSize = ((self.screenRect.width - self.sidebarWidth) / 2,  self.screenRect.height / 2)
+        self.matchEnergyMeterSize = (140, 25)
 
     #Define the structure of a set of buttons
     def buttonSetPos(self):

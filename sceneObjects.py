@@ -1,6 +1,7 @@
 import pygame
 import random
 import functions
+from matchdayCourt import Court
 
 #An object that determines the present background/buttons for the player
 class Scene():
@@ -155,6 +156,13 @@ class MatchdayScene(Scene):
         self.updateActions(master, rectSettings, seasonSettings)
         master.mousePos = None
 
+    #NEW
+    def drawMatchCourts(self, rectSettings):
+        for court in self.courtRects:
+            court.draw(rectSettings)
+            self.drawMatchVictoryMeter(court.rect, rectSettings)
+        self.drawTeammateMatchCourts(rectSettings)
+    '''
     def drawMatchCourts(self, rectSettings):
         for c,i in enumerate(self.courtRects):
             if c == self.courtFocus:
@@ -162,12 +170,13 @@ class MatchdayScene(Scene):
             else:
                 pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, i, 1)
             self.drawMatchVictoryMeter(i, rectSettings)
-        self.drawTeammateMatchCourts(rectSettings)
+        #self.drawTeammateMatchCourts(rectSettings)
+    '''
 
-
+    #NEW turning off temporarily
     def drawTeammateMatchCourts(self, rectSettings):
         for c, t in self.courtTeammates.items():
-            functions.drawTextCenter(rectSettings, t.name, self.courtRects[c], color = 'WHITE')
+            functions.drawTextCenter(rectSettings, t.name, self.courtRects[c].rect, color = 'WHITE')
 
     def updateMatchCourts(self, master, rectSettings):
         if master.mousePos != None:
@@ -210,9 +219,20 @@ class MatchdayScene(Scene):
 
     def clickCourtRect(self, master, rectSettings):
         for c, r in enumerate(self.courtRects):
-            if r.collidepoint(master.mousePos):
+            #NEW
+            if r.rect.collidepoint(master.mousePos):
+            #if r.collidepoint(master.mousePos):
                 self.courtFocus = c
+                r.isFocus = True
+            else: r.isFocus = False
 
+    #NEW
+    def generateCourtRects(self, master, rectSettings):
+        self.courtRects = []
+        for courtOrder in range(4):
+            self.courtRects.append(Court(courtOrder, rectSettings))
+
+    '''
     def generateCourtRects(self, master, rectSettings):
         self.courtRects = []
         courtWidth = rectSettings.matchCourtSize[0]
@@ -221,13 +241,14 @@ class MatchdayScene(Scene):
         self.courtRects.append(pygame.Rect((courtWidth,0),rectSettings.matchCourtSize))
         self.courtRects.append(pygame.Rect((0,courtHeight),rectSettings.matchCourtSize))
         self.courtRects.append(pygame.Rect((courtWidth,courtHeight),rectSettings.matchCourtSize))
-
+    '''
     def courtMatchOpponents(self, master, rectSettings):
         self.opponentList = functions.pickOpponents(master, rectSettings)
 
     def drawMatchOpponent(self, master, rectSettings):
         for c, o in zip(self.courtRects, self.opponentList):
-            oppRect = pygame.Rect(c.left, c.top + 55, c.width, c.height - 55)
+            #NEW
+            oppRect = pygame.Rect(c.rect.left, c.rect.top + 55, c.rect.width, c.rect.height - 55)
             functions.drawTextCenter(rectSettings, str(o.name + ' ' + o.style), oppRect, color = 'BEIGE')
 
     def matchdayCompete(self, master, rectSettings):
@@ -276,21 +297,38 @@ class MatchdayScene(Scene):
         else:
             self.matchdayResultsButton.isActive = False
 
+    def drawMatchEnergyMeters(self, courtRect, rectSettings):
+        topMeterRectX = courtRect.x + (courtRect.width - rectSettings.matchVictoryMeterSize[0]) / 2
+        topMeterRectY = courtRect.bottom - rectSettings.matchVictoryMeterSize[1] - rectSettings.matchVictoryMeterGap - rectSettings.matchEnergyMeterSize[1]*2
+        topMeterRectPos = (topMeterRectX, topMeterRectY)
+        topMeterRect = pygame.Rect(topMeterRectPos, rectSettings.matchEnergyMeterSize)
+        botMeterRectX = courtRect.x + (courtRect.width - rectSettings.matchVictoryMeterSize[0]) / 2 + (rectSettings.matchVictoryMeterSize[0] - rectSettings.matchEnergyMeterSize[0])
+        botMeterRectY = courtRect.bottom - rectSettings.matchVictoryMeterGap - rectSettings.matchEnergyMeterSize[1]
+        botMeterRectPos = (botMeterRectX, botMeterRectY)
+        botMeterRect = pygame.Rect(botMeterRectPos, rectSettings.matchEnergyMeterSize)
+
+        pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, topMeterRect, 2)
+        pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, botMeterRect, 2)
+        functions.drawRectFill(topMeterRect, rectSettings.BEIGE, rectSettings)
+        functions.drawRectFill(botMeterRect, rectSettings.BEIGE, rectSettings)
+
+
+    def drawMatchCentralChanceMeter(self, courtRect, rectSettings):
+        meterRectX = courtRect.x + (courtRect.width - rectSettings.matchVictoryMeterSize[0]) / 2
+        meterRectY = courtRect.bottom - rectSettings.matchVictoryMeterSize[1] - rectSettings.matchVictoryMeterGap - rectSettings.matchEnergyMeterSize[1]
+        meterRectPos = (meterRectX, meterRectY)
+        meterRect = pygame.Rect(meterRectPos, rectSettings.matchVictoryMeterSize)
+        pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, meterRect, 2)
+
+        meterRectPlayerFillRect = pygame.Rect(meterRect.topleft,(meterRect.width/2, meterRect.height))
+        meterRectOpponentFillRect =pygame.Rect(meterRectPlayerFillRect.topright,(meterRect.width/2, meterRect.height))
+        functions.drawRectFill(meterRectPlayerFillRect, rectSettings.GREEN, rectSettings)
+        functions.drawRectFill(meterRectOpponentFillRect, rectSettings.RED, rectSettings)
+
     def drawMatchVictoryMeter(self, courtRect, rectSettings): #TODO: add the odds of player victory as parameter
         if self.matchdayPhase == 1:
-            meterRectX = courtRect.x + (courtRect.width - rectSettings.matchVictoryMeterSize[0]) / 2
-            meterRectY = courtRect.bottom - rectSettings.matchVictoryMeterSize[1] - rectSettings.matchVictoryMeterGap
-            meterRectPos = (meterRectX, meterRectY)
-            meterRect = pygame.Rect(meterRectPos, rectSettings.matchVictoryMeterSize)
-            pygame.draw.rect(rectSettings.screen, rectSettings.WHITE, meterRect, 2)
-            meterRectPlayerFillRect = pygame.Rect(meterRect.topleft,(meterRect.width/2, meterRect.height))
-            meterRectOpponentFillRect =pygame.Rect(meterRectPlayerFillRect.topright,(meterRect.width/2, meterRect.height))
-            meterRectPlayerFill = rectSettings.screen.subsurface(meterRectPlayerFillRect).convert_alpha()
-            meterRectOpponentFill = rectSettings.screen.subsurface(meterRectOpponentFillRect).convert_alpha()
-            meterRectPlayerFill.fill(rectSettings.GREEN)
-            meterRectOpponentFill.fill(rectSettings.RED)
-            rectSettings.screen.blit(meterRectPlayerFill, meterRectPlayerFillRect)
-            rectSettings.screen.blit(meterRectOpponentFill, meterRectOpponentFillRect)
+            self.drawMatchCentralChanceMeter(courtRect, rectSettings)
+            self.drawMatchEnergyMeters(courtRect, rectSettings)
         else:
             pass
 

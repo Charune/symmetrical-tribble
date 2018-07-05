@@ -110,5 +110,7 @@ def matchdaySim(master, rectSettings):
 def matchdayComp(master, rectSettings):
     master.sceneDict[master.sceneId].matchdayCompete(master, rectSettings)
 
-def testFunc():
-    print('hello')
+def drawRectFill(rect, color, rectSettings):
+    subSurf = rectSettings.screen.subsurface(rect).convert_alpha()
+    subSurf.fill(color)
+    rectSettings.screen.blit(subSurf, rect)
